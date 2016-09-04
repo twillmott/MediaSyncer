@@ -2,6 +2,7 @@ package uk.org.willmott.mediasyncer.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
+import uk.org.willmott.mediasyncer.MainActivity;
+import uk.org.willmott.mediasyncer.R;
 
 /**
  * This is my version of an service for interfacing with Trakt. It is very heavily dependent on
@@ -38,12 +41,12 @@ public class TraktService {
     private String authenticationState;
 
 
-    public TraktService(Context context) {
-        checkAuthentication(context, null);
-    }
-
-    public TraktService(String code)  {
-        checkAuthentication(null, code);
+    /**
+     * Contructor for this class that checks the authentication. Supply a null code to check authentication,
+     * supply a valid code to continue authentication. Context is required.
+     */
+    public TraktService(Context context, String code) {
+        checkAuthentication(context, code);
     }
 
     public TraktV2 getTrakt() {
@@ -59,13 +62,29 @@ public class TraktService {
     public void checkAuthentication(Context context, String code) {
         try {
 
-            // TODO, save access tokens to database.
+            SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            if (code == null) {
+                // Load the access and refresh tokens from shared preferences.
+                String accessToken = sharedPref.getString(context.getString(R.string.trakt_access_token_preference), null);
+                String refreshToken = sharedPref.getString(context.getString(R.string.trakt_refresh_token_preference), null);
 
-            // First we'll try refreshing the token that we may have.
-            Response<AccessToken> accessToken = new RefreshTraktToken(trakt).execute().get();
+                // If we have an access token, then we don't need any more authorisation.
+                if (accessToken != null && refreshToken != null) {
+                    trakt.accessToken(accessToken);
+                    trakt.refreshToken(refreshToken);
 
-            // If this doesn't work, we need to reauthorise.
-            if (context != null && code == null) {
+                    // Refresh the token for ease of use and resave it.
+                    Response<AccessToken> accessTokenResponse = new RefreshTraktToken(trakt).execute().get();
+                    trakt.accessToken(accessTokenResponse.body().access_token);
+                    trakt.refreshToken(accessTokenResponse.body().refresh_token);
+                    sharedPref.edit().putString(context.getString(R.string.trakt_access_token_preference), accessTokenResponse.body().access_token).apply();
+                    sharedPref.edit().putString(context.getString(R.string.trakt_refresh_token_preference), accessTokenResponse.body().refresh_token).apply();
+
+                    return;
+                }
+
+                // If we get to this stage, then we don't have a token, so need to re-authorise.
+
                 // Start by getting a new code for this new authentication.
                 OAuthClientRequest request = trakt.buildAuthorizationRequest("");
 
@@ -74,9 +93,11 @@ public class TraktService {
                 context.startActivity(intent);
             } else {
                 // Then get a new token from the code, this will be if we're continuing the authentication.
-                accessToken = new RetrieveTraktToken(code, trakt).execute().get();
-                trakt.accessToken(accessToken.body().access_token);
-                trakt.refreshToken(accessToken.body().refresh_token);
+                Response<AccessToken> accessTokenResponse = new RetrieveTraktToken(code, trakt).execute().get();
+                trakt.accessToken(accessTokenResponse.body().access_token);
+                trakt.refreshToken(accessTokenResponse.body().refresh_token);
+                sharedPref.edit().putString(context.getString(R.string.trakt_access_token_preference), accessTokenResponse.body().access_token).apply();
+                sharedPref.edit().putString(context.getString(R.string.trakt_refresh_token_preference), accessTokenResponse.body().refresh_token).apply();
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());

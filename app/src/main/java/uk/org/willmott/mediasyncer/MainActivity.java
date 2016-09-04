@@ -31,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
         Uri intentUri = getIntent().getData();
         if (intentUri != null && intentUri.toString().startsWith(TraktService.REDIRECT_URL) && intentUri.getQueryParameter("code") != null) {
             // Continue the authorisation process
-            traktService = new TraktService(intentUri.getQueryParameter("code"));
+            traktService = new TraktService(this, intentUri.getQueryParameter("code"));
         } else {
             // Check for authorisation
-            traktService = new TraktService(this);
+            traktService = new TraktService(this, null);
         }
         // ==============================
 
