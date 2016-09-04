@@ -108,9 +108,9 @@ public class TraktService {
     /**
      * Get all the watched shows for the authorised user.
      */
-    public List<BaseShow> getWatchedShows() {
+    public List<BaseShow> getShowWatchlist() {
         try {
-            return new RetrieveShows(trakt).execute().get();
+            return new RetrieveShowWatchlist(trakt).execute().get();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -148,6 +148,30 @@ public class TraktService {
         protected List<BaseShow> doInBackground(Void... voids) {
             try {
                 Response<List<BaseShow>> response = trakt.users().watchedShows(Username.ME, Extended.FULL).execute();
+                if (response.isSuccessful()) {
+                    return response.body();
+                }
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+
+    private class RetrieveShowWatchlist extends AsyncTask<Void, Void, List<BaseShow>> {
+
+        TraktV2 trakt;
+
+        RetrieveShowWatchlist(TraktV2 trakt) {
+            this.trakt = trakt;
+        }
+
+        @Override
+        protected List<BaseShow> doInBackground(Void... voids) {
+            try {
+                Response<List<BaseShow>> response = trakt.users().watchlistShows(Username.ME, Extended.FULL).execute();
                 if (response.isSuccessful()) {
                     return response.body();
                 }
