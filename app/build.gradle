@@ -29,5 +29,6 @@ dependencies {
     compile 'com.android.support:design:24.1.1'
     // https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api
     compile 'com.uwetrottmann.trakt5:trakt-java:5.2.1'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 
 }

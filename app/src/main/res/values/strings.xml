@@ -5,4 +5,5 @@
     <string name="trakt_access_token_preference">trakt_access_token_preference</string>
     <string name="trakt_refresh_token_preference">trakt_refresh_token_preference</string>
     <string name="preference_file_key">preference_file_key</string>
+    <string name="tab_1_name">Library</string>
 </resources>
