@@ -7,6 +7,7 @@ package uk.org.willmott.mediasyncer;
  * Created by tomwi on 05/09/2016.
  */
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.service.TraktService;
+import uk.org.willmott.mediasyncer.ui.LibrarySimpleAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -37,7 +39,7 @@ public class LibraryFragment extends Fragment {
 
     // The below values are used as keys to link information to it's relating list viewfield.
     private static final String LIST_TITLE = "title";
-    private static final String LIST_IMAGE = "list_view_image";
+    private static final String LIST_IMAGE = "image_url";
     private static final String LIST_DETAILS = "details";
 
     // The service that communicates with trakt.
@@ -49,6 +51,8 @@ public class LibraryFragment extends Fragment {
     // The list that represents the list item. It contains a hashmap that contains all the data
     // do display in the list fragment.
     List<HashMap<String, String>> libraryList = new ArrayList<>();
+
+    SimpleAdapter simpleAdapter;
 
 
     /**
@@ -82,13 +86,7 @@ public class LibraryFragment extends Fragment {
         librarySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateLibraryList();
-                // Stop the refresh action when complete
-                if (librarySwipeRefreshLayout != null) {
-                    librarySwipeRefreshLayout.setRefreshing(false);
-                    librarySwipeRefreshLayout.destroyDrawingCache();
-                    librarySwipeRefreshLayout.clearAnimation();
-                }
+                new RetrieveLibraryInfo().execute();
             }
         });
         librarySwipeRefreshLayout.setDistanceToTriggerSync(500);
@@ -105,11 +103,11 @@ public class LibraryFragment extends Fragment {
         in the from string array.
          */
         // The from array directly maps to the to array.
-        String[] from = {LIST_TITLE, LIST_DETAILS};
-        int[] to = {R.id.library_list_title, R.id.library_list_details};
+        String[] from = {LIST_TITLE, LIST_DETAILS, LIST_IMAGE};
+        int[] to = {R.id.library_list_title, R.id.library_list_details, R.id.library_list_image};
         // Create an adapter that is full of our list data. The libraryList holds all the data, and the
         // from and to variables map the hashmap keys to the view id's.
-        SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(), libraryList, R.layout.list_item_library, from, to);
+        simpleAdapter = new LibrarySimpleAdapter(getActivity(), libraryList, R.layout.list_item_library, from, to);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_library);
         listView.setAdapter(simpleAdapter);
 
@@ -134,29 +132,66 @@ public class LibraryFragment extends Fragment {
      * from variable above.
      */
     private void updateLibraryList() {
-        // The shows from trakt
-        List<BaseShow> shows;
-        // More detail about the show such as progress
-        List<BaseShow> showsProgress;
 
-        // Get all of the shows.
-        shows = traktService.getShowWatchlist();
-        // Get the progress for all of the users shows.
-        showsProgress = traktService.getShowWatchedProgress(shows);
+    }
 
-        libraryList.clear();
 
-        int i = 0;
-        for (BaseShow show : shows) {
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(LIST_TITLE, show.show.title);
-            if (showsProgress.get(i).next_episode != null) {
-                hashMap.put(LIST_DETAILS, showsProgress.get(i).next_episode.title);
-            } else {
-                hashMap.put(LIST_DETAILS, "Ended");
+    /**
+     * Retrieve all of the users library info. This will have to be extended to include movies when
+     * we add that functionality.
+     */
+    private class RetrieveLibraryInfo extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            // Get all of the users shows, with the minimum information.
+            // Get the users watchlist
+            List<BaseShow> watchlistShows = traktService.getShowWatchlist();
+            // Get the users watched shows.
+            List<BaseShow> watchedShows = traktService.getShowWatched();
+            // Get the users collection.
+            List<BaseShow> collectedShows = traktService.getShowCollection();
+
+            // Merge all the shows in to one list.
+            List<BaseShow> shows = traktService.mergeShows(true, watchlistShows, watchedShows, collectedShows);
+
+            libraryList.clear();
+
+            for (BaseShow show : shows) {
+                HashMap<String, String> hashMap = new HashMap<>();
+                // Get more detailed show information.
+                String showId = show.show.ids.trakt.toString();
+                BaseShow showProgress = traktService.getShowWatchedProgress(showId);
+
+                hashMap.put(LIST_TITLE, show.show.title);
+
+                // Get the next episode filled in
+                if (showProgress.next_episode != null) {
+                    hashMap.put(LIST_DETAILS, showProgress.next_episode.title);
+                } else {
+                    hashMap.put(LIST_DETAILS, "Ended");
+                }
+                // Add the show image to the list view
+                String image = show.show.images.poster.full;
+                if (image != null) {
+                    hashMap.put(LIST_IMAGE, image);
+                }
+
+                libraryList.add(hashMap);
             }
-            libraryList.add(hashMap);
-            i++;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            simpleAdapter.notifyDataSetChanged();
+
+            // Stop the refresh action when complete
+            librarySwipeRefreshLayout.setRefreshing(false);
+            librarySwipeRefreshLayout.destroyDrawingCache();
+            librarySwipeRefreshLayout.clearAnimation();
         }
     }
 }

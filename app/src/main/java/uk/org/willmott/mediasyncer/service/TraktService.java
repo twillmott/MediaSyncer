@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
@@ -16,10 +17,13 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Response;
-import uk.org.willmott.mediasyncer.MainActivity;
 import uk.org.willmott.mediasyncer.R;
 
 /**
@@ -110,105 +114,64 @@ public class TraktService {
      */
     public List<BaseShow> getShowWatchlist() {
         try {
-            return new RetrieveShowWatchlist(trakt).execute().get();
-        } catch (Exception e) {
+            Response<List<BaseShow>> response = trakt.users().watchlistShows(Username.ME, Extended.IMAGES).execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
-
 
     /**
-     * Get the watched progress for the input show(s).
+     * Get all watched shows for the user.
      */
-    public List<BaseShow> getShowWatchedProgress(List<BaseShow> shows) {
-
-        List<String> showIds = new ArrayList<>();
-        for (BaseShow show : shows) {
-            showIds.add(show.show.ids.trakt.toString());
-        }
+    public List<BaseShow> getShowWatched() {
         try {
-            return new RetrieveWatchedProgress(trakt).execute(showIds.toArray(new String[shows.size()])).get();
-        } catch (Exception e) {
+            Response<List<BaseShow>> response = trakt.users().watchedShows(Username.ME, Extended.IMAGES).execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-
-    private class RetrieveShows extends AsyncTask<Void, Void, List<BaseShow>> {
-
-        TraktV2 trakt;
-
-        RetrieveShows(TraktV2 trakt) {
-            this.trakt = trakt;
-        }
-
-        @Override
-        protected List<BaseShow> doInBackground(Void... voids) {
-            try {
-                Response<List<BaseShow>> response = trakt.users().watchedShows(Username.ME, Extended.FULL).execute();
-                if (response.isSuccessful()) {
-                    return response.body();
-                }
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+    /**
+     * Get all watched shows for the user.
+     */
+    public List<BaseShow> getShowCollection() {
+        try {
+            Response<List<BaseShow>> response = trakt.users().collectionShows(Username.ME, Extended.IMAGES).execute();
+            if (response.isSuccessful()) {
+                return response.body();
             }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-
-    private class RetrieveShowWatchlist extends AsyncTask<Void, Void, List<BaseShow>> {
-
-        TraktV2 trakt;
-
-        RetrieveShowWatchlist(TraktV2 trakt) {
-            this.trakt = trakt;
-        }
-
-        @Override
-        protected List<BaseShow> doInBackground(Void... voids) {
-            try {
-                Response<List<BaseShow>> response = trakt.users().watchlistShows(Username.ME, Extended.FULL).execute();
-                if (response.isSuccessful()) {
-                    return response.body();
-                }
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+    /**
+     * Get all watched shows for the user.
+     */
+    public BaseShow getShowWatchedProgress(String showId) {
+        try {
+            Response<BaseShow> response = trakt.shows().watchedProgress(showId, false, false, Extended.FULLIMAGES).execute();
+            if (response.isSuccessful()) {
+                return response.body();
             }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
-
-
-    private class RetrieveWatchedProgress extends AsyncTask<String, Void, List<BaseShow>> {
-
-        TraktV2 trakt;
-
-        RetrieveWatchedProgress(TraktV2 trakt) {
-            this.trakt = trakt;
-        }
-
-        @Override
-        protected List<BaseShow> doInBackground(String... showIds) {
-            List<BaseShow> shows = new ArrayList<>();
-            try {
-                for (String showId : showIds) {
-                    Response<BaseShow> response = trakt.shows().watchedProgress(showId, false, false, Extended.FULL).execute();
-                    if (response.isSuccessful()) {
-                        shows.add(response.body());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return shows;
-        }
-    }
-
 
     private class RetrieveTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
 
@@ -230,6 +193,39 @@ public class TraktService {
             return null;
         }
     }
+
+    /**
+     * Given lists of shows, merge them to get a list of all shows in each list with no
+     * duplicates sorted alphabetically if sorting is true.
+     */
+    public List<BaseShow> mergeShows(boolean sorting, final List<BaseShow>... shows) {
+        final Map<String, BaseShow> showMap = new LinkedHashMap<>();
+
+        // Go through all the lists and add them to the hash map in order to get only one instance.
+        for (List<BaseShow> showList : shows) {
+            for (BaseShow show : showList) {
+                showMap.put(show.show.ids.trakt.toString().toLowerCase(), show);
+            }
+        }
+
+        if (sorting) {
+            // Return a sorted list
+            return sortShowsAlphabetically( new ArrayList<>(showMap.values()));
+        } else {
+            // Return the unsorted list
+            return new ArrayList<>(showMap.values());
+        }
+    }
+
+    private List<BaseShow> sortShowsAlphabetically(List<BaseShow> shows) {
+        Collections.sort(shows, new Comparator<BaseShow>() {
+            public int compare(BaseShow v1, BaseShow v2) {
+                return v1.show.title.compareTo(v2.show.title);
+            }
+        });
+        return shows;
+    }
+
 
 
     private class RefreshTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
