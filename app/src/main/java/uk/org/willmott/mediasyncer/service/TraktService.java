@@ -217,6 +217,9 @@ public class TraktService {
         }
     }
 
+    /**
+     * Sort the list of shows alphabetically.
+     */
     private List<BaseShow> sortShowsAlphabetically(List<BaseShow> shows) {
         Collections.sort(shows, new Comparator<BaseShow>() {
             public int compare(BaseShow v1, BaseShow v2) {

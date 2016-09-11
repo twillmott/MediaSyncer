@@ -10,8 +10,10 @@ package uk.org.willmott.mediasyncer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -46,13 +48,13 @@ public class LibraryFragment extends Fragment {
     private TraktService traktService;
     // The content type that we're displaying in this tab (TV or Movies).
     private ContentType contentType;
-    // The swipe refresh layout that holds our listing item.
-    private SwipeRefreshLayout librarySwipeRefreshLayout;
     // The list that represents the list item. It contains a hashmap that contains all the data
     // do display in the list fragment.
-    List<HashMap<String, String>> libraryList = new ArrayList<>();
-
-    SimpleAdapter simpleAdapter;
+    private List<HashMap<String, String>> libraryList = new ArrayList<>();
+    // The simple adapter that holds all of the list results.
+    private SimpleAdapter simpleAdapter;
+    // The refresh button in the action bar.
+    private MenuItem refresh;
 
 
     /**
@@ -73,6 +75,8 @@ public class LibraryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // State that we have items that we want to put in the action bar.
+        setHasOptionsMenu(true);
 
         // Don't put any Trakt code in here, it may get run prior to the authorisation
         // in the main activity.
@@ -80,16 +84,6 @@ public class LibraryFragment extends Fragment {
 
         // ========== Get our view =============
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
-
-        //   ========== Set up the swipe refresh layout that holds our list view ==============.
-        librarySwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swiperefresh_library);
-        librarySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new RetrieveLibraryInfo().execute();
-            }
-        });
-        librarySwipeRefreshLayout.setDistanceToTriggerSync(500);
 
         // =================== Now set up the list view. ========================
         /*
@@ -125,6 +119,32 @@ public class LibraryFragment extends Fragment {
         }
     }
 
+
+    // Set up the action bar buttons / options menu.  For this fragment this is just currently
+    // the refresh button.
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_library, menu);
+        refresh = menu.findItem(R.id.action_refresh);
+    }
+
+    // Set up the handling of the action bar buttons that we've added to this fragment.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+            // TODO change the colour of the spinner that's defined in layout/actionbar_indeterminate_spinner.
+            // Start the progress spinner spinning.
+            refresh.setActionView(R.layout.actionbar_indeterminate_progress);
+            // Refresh the data list.
+            new RetrieveLibraryInfo().execute();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     /**
      * This method updates the library list with the new library information. This is done by populating
@@ -187,11 +207,8 @@ public class LibraryFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             simpleAdapter.notifyDataSetChanged();
-
-            // Stop the refresh action when complete
-            librarySwipeRefreshLayout.setRefreshing(false);
-            librarySwipeRefreshLayout.destroyDrawingCache();
-            librarySwipeRefreshLayout.clearAnimation();
+            // Stop the refresh button spinner.
+            refresh.setActionView(null);
         }
     }
 }

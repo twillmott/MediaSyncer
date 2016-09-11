@@ -80,17 +80,6 @@ public class MainActivity extends AppCompatActivity {
             traktService = new TraktService(this, null);
         }
         // ==============================
-
-//        Button button = (Button) findViewById(R.id.button);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                // Everything in this class is just testing (messing around).
-//
-//
-//            }
-//        });
     }
 
 
@@ -123,8 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
 
     /**
