@@ -146,15 +146,6 @@ public class LibraryFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * This method updates the library list with the new library information. This is done by populating
-     * the libraryList list by putting in all the details to the hashmap. The order is shown by the
-     * from variable above.
-     */
-    private void updateLibraryList() {
-
-    }
-
 
     /**
      * Retrieve all of the users library info. This will have to be extended to include movies when
