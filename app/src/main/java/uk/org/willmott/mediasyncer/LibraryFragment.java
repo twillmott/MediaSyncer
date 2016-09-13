@@ -110,8 +110,10 @@ public class LibraryFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ShowActivity.class);
+                // Get the ID of the show we've clicked on
+                String listId = parent.getItemAtPosition(position).toString();
                 // Use this to put extra info in to the intent
-                intent.putExtra("tst", simpleAdapter.getItemId(position));
+                intent.putExtra("tst", listId);
                 startActivity(intent);
             }
         });
