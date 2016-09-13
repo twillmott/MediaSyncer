@@ -111,9 +111,9 @@ public class LibraryFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ShowActivity.class);
                 // Get the ID of the show we've clicked on
-                String listId = parent.getItemAtPosition(position).toString();
-                // Use this to put extra info in to the intent
-                intent.putExtra("tst", listId);
+                String showId = ((HashMap<String, String>) parent.getItemAtPosition(position)).get("id");
+                // Put the id in to the intent
+                intent.putExtra("id", showId);
                 startActivity(intent);
             }
         });
@@ -201,6 +201,10 @@ public class LibraryFragment extends Fragment {
                 if (image != null) {
                     hashMap.put(LIST_IMAGE, image);
                 }
+
+                // Add the id in last for the next screen to find it. This won't be displayed on the
+                // listview.
+                hashMap.put("id", showId);
 
                 libraryList.add(hashMap);
             }

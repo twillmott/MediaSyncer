@@ -10,6 +10,7 @@ import android.util.Log;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
+import com.uwetrottmann.trakt5.entities.Show;
 import com.uwetrottmann.trakt5.entities.Username;
 import com.uwetrottmann.trakt5.enums.Extended;
 
@@ -163,6 +164,23 @@ public class TraktService {
     public BaseShow getShowWatchedProgress(String showId) {
         try {
             Response<BaseShow> response = trakt.shows().watchedProgress(showId, false, false, Extended.FULLIMAGES).execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * Get basic information about a show
+     */
+    public Show getShow(String showId) {
+        try {
+            Response<Show> response = trakt.shows().summary(showId, Extended.FULLIMAGES).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
