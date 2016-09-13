@@ -7,6 +7,7 @@ package uk.org.willmott.mediasyncer;
  * Created by tomwi on 05/09/2016.
  */
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -104,6 +106,15 @@ public class LibraryFragment extends Fragment {
         simpleAdapter = new LibrarySimpleAdapter(getActivity(), libraryList, R.layout.list_item_library, from, to);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_library);
         listView.setAdapter(simpleAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ShowActivity.class);
+                // Use this to put extra info in to the intent
+                intent.putExtra("tst", simpleAdapter.getItemId(position));
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MediaSyncer.iml" filepath="$PROJECT_DIR$/MediaSyncer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/media-syncer.iml" filepath="$PROJECT_DIR$/media-syncer.iml" />
     </modules>
   </component>
 </project>
