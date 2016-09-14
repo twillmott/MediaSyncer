@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.Show;
 
 import java.util.concurrent.ExecutionException;
@@ -25,6 +26,7 @@ public class ShowActivity extends AppCompatActivity {
     String showId;
     TraktService traktService;
     Show show;
+    BaseShow BaseShow;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -39,6 +41,10 @@ public class ShowActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
+    public TraktService getTraktService() {return traktService;}
+
+    public String getShowId() {return showId;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,8 +143,8 @@ public class ShowActivity extends AppCompatActivity {
             switch (position) {
                 case 0: // Left screen will be the alarm clock
                     return ShowOverviewFragment.newInstance(position);
-//                case 1: // Middle screen will be live times
-//                    return LiveTubesFragment.newInstance(position);
+                case 1: // Middle screen will be live times
+                    return SeriesFragment.newInstance(position);
                 default: // This will only display if something weird messes up
                     return PlaceholderFragment.newInstance(position + 1);
             }
