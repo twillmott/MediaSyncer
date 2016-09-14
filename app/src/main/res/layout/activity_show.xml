@@ -48,6 +48,11 @@
 
         </FrameLayout>
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/show_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </android.support.design.widget.AppBarLayout>
 
     <!--<include layout="@layout/content_show" />-->
@@ -55,18 +60,25 @@
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/show_nest_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="uk.org.willmott.mediasyncer.ShowActivity"
         tools:showIn="@layout/activity_show">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
-            android:id="@+id/shows_text"
-            android:text="@string/large_text" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/show_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="@dimen/text_margin"-->
+            <!--android:id="@+id/shows_text"-->
+            <!--android:text="@string/large_text" />-->
 
     </android.support.v4.widget.NestedScrollView>
 
