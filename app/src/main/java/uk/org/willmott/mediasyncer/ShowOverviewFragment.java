@@ -18,8 +18,7 @@ import android.widget.TextView;
 public class ShowOverviewFragment extends Fragment {
 
     /**
-     * The fragment argument representing the section number for this
-     * fragment.
+     * The fragment that displays the show overview for the show tabs in the show activity.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 

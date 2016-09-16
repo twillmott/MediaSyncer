@@ -42,9 +42,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // =============== Tab layout stuff ==========================
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mMainSectionsPagerAdapter = new MainSectionsPagerAdapter(getSupportFragmentManager());
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.main_tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        // =============================================================
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,15 +85,23 @@ public class MainActivity extends AppCompatActivity {
         // ==============================
     }
 
-
+    /**
+     * Get the trakt service from the main activity. This should be used for any
+     * trakt calls.
+     */
     public TraktService getTraktService() {
         return traktService;
     }
 
-    // Define what content type that we have set in the action bar selector.
+    /**
+     * Return what content type we're loading, TV or movies.
+     */
     public ContentType getContentType() { return ContentType.TV; }
 
 
+    /**
+     * Set up the options menu (xml)
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -98,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Handle any options menu (toolbar) button clicks.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -109,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -3,7 +3,8 @@ package uk.org.willmott.mediasyncer;
 /**
  * This fragment represents the users TV Library. It holds shows, and takes the
  * user to a show. The library is a combination of any watched show, collected show,
- * or watch list. TODO later on, add filters to filter what is in the library.
+ * or watch list.
+ * TODO later on, add filters to filter what is in the library.
  * Created by tomwi on 05/09/2016.
  */
 
@@ -106,6 +107,7 @@ public class LibraryFragment extends Fragment {
         simpleAdapter = new LibrarySimpleAdapter(getActivity(), libraryList, R.layout.list_item_library, from, to);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_library);
         listView.setAdapter(simpleAdapter);
+        // Set the behvaiour of the listing click.
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -124,12 +126,11 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
-
-        // Start by finding out what type of content we want to display.
-        contentType = ((MainActivity) this.getActivity()).getContentType();
-
-        if (contentType == ContentType.TV) {
-        }
+//        // Start by finding out what type of content we want to display.
+//        contentType = ((MainActivity) this.getActivity()).getContentType();
+//
+//        if (contentType == ContentType.TV) {
+//        }
     }
 
 
@@ -158,7 +159,6 @@ public class LibraryFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     /**
      * Retrieve all of the users library info. This will have to be extended to include movies when

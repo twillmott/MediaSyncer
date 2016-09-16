@@ -85,16 +85,17 @@ public class ShowActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         // ================================================================
 
-        // Download the show information.
+        // Download the show information. We have a .get() on the end so that we wait until
+        // all the info is loaded before we load the screen.
         try {
-            new RetriveShowInfo().execute().get();
+            new RetrieveShowInfo().execute().get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
 
-
+        // Placeholder code in case we want to add a floating action button.
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -105,7 +106,11 @@ public class ShowActivity extends AppCompatActivity {
 //        });
     }
 
-    private class RetriveShowInfo extends AsyncTask<Void, Void, Void> {
+    /**
+     * An async task that will download all the info on the show that we need to display the show
+     * activity. i.e. the banner and show name.
+     */
+    private class RetrieveShowInfo extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -113,17 +118,19 @@ public class ShowActivity extends AppCompatActivity {
             return null;
         }
 
+        /**
+         * Set all of the UI elements.
+         */
         @Override
         protected void onPostExecute(Void aVoid) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
             toolbar.setTitle(show.title);
-//            TextView textView = (TextView) findViewById(R.id.shows_text);
-//            textView.setText(show.title);
             ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
             String url = show.images.thumb.full;
             Picasso.with(ShowActivity.this).load(url).into(imageView);
         }
     }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
