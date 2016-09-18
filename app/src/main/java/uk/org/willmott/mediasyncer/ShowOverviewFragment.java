@@ -42,7 +42,7 @@ public class ShowOverviewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_show_overview, container, false);
         TextView textView = (TextView) rootView.findViewById(R.id.tempTextBox);
-        textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+        textView.setText(getString(R.string.large_text));
         return rootView;
     }
 }

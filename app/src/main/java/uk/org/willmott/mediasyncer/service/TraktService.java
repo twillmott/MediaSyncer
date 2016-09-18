@@ -236,6 +236,28 @@ public class TraktService {
     }
 
     /**
+     * Combine two base shows, if any of show A's properties are null, we will use
+     * show B's property.
+     */
+    public BaseShow combineBaseShows(BaseShow showA, BaseShow showB) {
+        BaseShow show = new BaseShow();
+
+        show.next_episode = showA.next_episode == null ? showB.next_episode : showA.next_episode;
+        show.show = showA.show == null ? showB.show : showA.show;
+        show.aired = showA.aired == null ? showB.aired : showA.aired;
+        show.completed = showA.completed == null ? showB.completed : showA.completed;
+        show.hidden_seasons = showA.hidden_seasons == null ? showB.hidden_seasons : showA.hidden_seasons;
+        show.last_collected_at = showA.last_collected_at == null ? showB.last_collected_at : showA.last_collected_at;
+        show.last_watched_at = showA.last_watched_at == null ? showB.last_watched_at : showA.last_watched_at;
+        show.listed_at = showA.listed_at == null ? showB.listed_at : showA.listed_at;
+        show.next_episode = showA.next_episode == null ? showB.next_episode : showA.next_episode;
+        show.plays = showA.plays == null ? showB.plays : showA.plays;
+        show.completed = showA.completed == null ? showB.completed : showA.completed;
+
+        return show;
+    }
+
+    /**
      * Sort the list of shows alphabetically.
      */
     private List<BaseShow> sortShowsAlphabetically(List<BaseShow> shows) {

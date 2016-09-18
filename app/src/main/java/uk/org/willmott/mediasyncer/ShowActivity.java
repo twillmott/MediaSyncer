@@ -2,6 +2,7 @@ package uk.org.willmott.mediasyncer;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -77,10 +78,6 @@ public class ShowActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.show_container);
         mViewPager.setAdapter(mShowSectionsPagerAdapter);
 
-        // For some reason we need to set this so that the view pager will display in the scrollview.
-        NestedScrollView nv = (NestedScrollView) findViewById(R.id.show_nest_scrollview);
-        nv.setFillViewport(true);
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.show_tabs);
         tabLayout.setupWithViewPager(mViewPager);
         // ================================================================
@@ -89,9 +86,7 @@ public class ShowActivity extends AppCompatActivity {
         // all the info is loaded before we load the screen.
         try {
             new RetrieveShowInfo().execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -148,9 +143,9 @@ public class ShowActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             // This is where we define all of the fragments in our activity.
             switch (position) {
-                case 0: // Left screen will be the alarm clock
+                case 0:
                     return ShowOverviewFragment.newInstance(position);
-                case 1: // Middle screen will be live times
+                case 1:
                     return SeriesFragment.newInstance(position);
                 default: // This will only display if something weird messes up
                     return PlaceholderFragment.newInstance(position + 1);

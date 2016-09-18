@@ -8,29 +8,26 @@ package uk.org.willmott.mediasyncer;
  * Created by tomwi on 05/09/2016.
  */
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import com.uwetrottmann.trakt5.entities.BaseShow;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.service.TraktService;
-import uk.org.willmott.mediasyncer.ui.LibrarySimpleAdapter;
+import uk.org.willmott.mediasyncer.ui.LibraryAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -53,11 +50,11 @@ public class LibraryFragment extends Fragment {
     private ContentType contentType;
     // The list that represents the list item. It contains a hashmap that contains all the data
     // do display in the list fragment.
-    private List<HashMap<String, String>> libraryList = new ArrayList<>();
-    // The simple adapter that holds all of the list results.
-    private SimpleAdapter simpleAdapter;
+    private List<BaseShow> showsList = new ArrayList<>();
     // The refresh button in the action bar.
     private MenuItem refresh;
+    // The adapter used to display the listing results.
+    LibraryAdapter libraryAdapter;
 
 
     /**
@@ -89,36 +86,12 @@ public class LibraryFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
 
         // =================== Now set up the list view. ========================
-        /*
-        How our list view works:
-        We have the list_item_library.xml layout that represents a single list item. This item contains
-        data such as the title, picture, info, IMDB rating etc..
-        We then have the libraryList that contains a hashmap. This hashmap contains a bunch of values
-        to populate the list_item_library view.
-        Below we have from and to. From is the hashmap key, which maps to the to which is the id of
-        each item in the list view. Therefore all items in the hashmap should be in the order stated
-        in the from string array.
-         */
-        // The from array directly maps to the to array.
-        String[] from = {LIST_TITLE, LIST_DETAILS, LIST_IMAGE};
-        int[] to = {R.id.library_list_title, R.id.library_list_details, R.id.library_list_image};
-        // Create an adapter that is full of our list data. The libraryList holds all the data, and the
-        // from and to variables map the hashmap keys to the view id's.
-        simpleAdapter = new LibrarySimpleAdapter(getActivity(), libraryList, R.layout.list_item_library, from, to);
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_library);
-        listView.setAdapter(simpleAdapter);
-        // Set the behvaiour of the listing click.
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ShowActivity.class);
-                // Get the ID of the show we've clicked on
-                String showId = ((HashMap<String, String>) parent.getItemAtPosition(position)).get("id");
-                // Put the id in to the intent
-                intent.putExtra("id", showId);
-                startActivity(intent);
-            }
-        });
+        // Set up the recycler view to dispaly the list of shows that we just loaded.
+        // Extra info will be loaded within the list view
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_library);
+        libraryAdapter = new LibraryAdapter(getContext(), showsList, traktService);
+        recyclerView.setAdapter(libraryAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return rootView;
     }
@@ -177,44 +150,24 @@ public class LibraryFragment extends Fragment {
             // Get the users collection.
             List<BaseShow> collectedShows = traktService.getShowCollection();
 
+            showsList.clear();
             // Merge all the shows in to one list.
             List<BaseShow> shows = traktService.mergeShows(true, watchlistShows, watchedShows, collectedShows);
 
-            libraryList.clear();
-
             for (BaseShow show : shows) {
-                HashMap<String, String> hashMap = new HashMap<>();
-                // Get more detailed show information.
-                String showId = show.show.ids.trakt.toString();
-                BaseShow showProgress = traktService.getShowWatchedProgress(showId);
+                BaseShow showProgress = traktService.getShowWatchedProgress(show.show.ids.trakt.toString());
 
-                hashMap.put(LIST_TITLE, show.show.title);
-
-                // Get the next episode filled in
-                if (showProgress.next_episode != null) {
-                    hashMap.put(LIST_DETAILS, showProgress.next_episode.title);
-                } else {
-                    hashMap.put(LIST_DETAILS, "Ended");
-                }
-                // Add the show image to the list view
-                String image = show.show.images.poster.full;
-                if (image != null) {
-                    hashMap.put(LIST_IMAGE, image);
-                }
-
-                // Add the id in last for the next screen to find it. This won't be displayed on the
-                // listview.
-                hashMap.put("id", showId);
-
-                libraryList.add(hashMap);
+                // Combine the base show and the show and add to the listing
+                showsList.add(traktService.combineBaseShows(show, showProgress));
             }
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            simpleAdapter.notifyDataSetChanged();
+            libraryAdapter.notifyDataSetChanged();
             // Stop the refresh button spinner.
             refresh.setActionView(null);
         }

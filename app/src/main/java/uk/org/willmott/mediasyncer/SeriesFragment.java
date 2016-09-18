@@ -8,11 +8,14 @@ package uk.org.willmott.mediasyncer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -20,11 +23,10 @@ import com.uwetrottmann.trakt5.entities.Season;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.service.TraktService;
-import uk.org.willmott.mediasyncer.ui.SeriesSimpleAdapter;
+import uk.org.willmott.mediasyncer.ui.SeasonAdapter;
 
 /**
  * The fragment that goes in the over view tab on the shows screen.
@@ -50,7 +52,7 @@ public class SeriesFragment extends Fragment {
 
     // The list that represents the list item. It contains a hashmap that contains all the data
     // do display in the list fragment.
-    private List<HashMap<String, String>> seasonsList = new ArrayList<>();
+    private List<Season> seasonsList = new ArrayList<>();
 
     // The simple adapter that holds all of the list results.
     private SimpleAdapter simpleAdapter;
@@ -81,33 +83,15 @@ public class SeriesFragment extends Fragment {
         // Get the ID of the show that we're loading form the parent activity
         showId = ((ShowActivity) this.getActivity()).getShowId();
 
-        // =================== Now set up the list view. ========================
-        /*
-        See main activity for how this kind of list view works.
-         */
-        // The from array directly maps to the to array.
-        String[] from = {LIST_SERIES, LIST_DETAILS, LIST_IMAGE};
-        int[] to = {R.id.library_list_title, R.id.library_list_details, R.id.library_list_image};
-        // Create an adapter that is full of our list data. The seasonsList holds all the data, and the
-        // from and to variables map the hashmap keys to the view id's.
-        simpleAdapter = new SeriesSimpleAdapter(getActivity(), seasonsList, R.layout.list_item_series, from, to);
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_series);
-        listView.setAdapter(simpleAdapter);
-        // Go to the episodes screen when we have clicked the listing.
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getActivity(), ShowActivity.class);
-                // Get the ID of the show we've clicked on
-//                String showId = ((HashMap<String, String>) parent.getItemAtPosition(position)).get("id");
-//                // Put the id in to the intent
-//                intent.putExtra("id", showId);
-//                startActivity(intent);
-            }
-        });
-
         // =============== Fetch the series info from trakt ========================
         new RetrieveSeries().execute();
+
+        // =================== Now set up the list view. ========================
+        // Create the recyclerView listing of all of our seasons.
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
+        SeasonAdapter adapter = new SeasonAdapter(getContext(), seasonsList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return rootView;
     }
@@ -121,44 +105,27 @@ public class SeriesFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            List<Season> seasons = new ArrayList<>();
             // Try filling the list of seasons up from a trakt call.
+            List<Season> seasons = new ArrayList<>();
             try {
                 seasons = traktService.getTrakt().seasons().summary(showId, Extended.FULLIMAGES).execute().body();
             } catch (Exception e) {
                 Log.e("Trakt", e.getMessage());
             }
 
-            // Go through each season and add the information to the hashmap that holds all the info.
-            for ( Season season : seasons ) {
-                HashMap<String, String> hashMap = new HashMap<>();
-
-                hashMap.put(LIST_SERIES, "Season " + season.number.toString());
-
-                // Get the next episode filled in
-                if (season.overview != null) {
-                    hashMap.put(LIST_DETAILS, season.overview);
-                } else {
-                    hashMap.put(LIST_DETAILS, "Ended");
+            // Go through the list of seasons and remove season 0 if it exists.
+            for (int i = 0; i < seasons.size(); i++) {
+                if (seasons.get(i).number == 0) {
+                    seasons.remove(i);
                 }
-                // Add the show image to the list view
-                if (season.images.logo != null) {
-                    hashMap.put(LIST_IMAGE, season.images.logo.full);
-                }
-
-                // Add the id in last for the next screen to find it. This won't be displayed on the
-                // listview.
-                hashMap.put("id", showId);
-
-                seasonsList.add(hashMap);
             }
+            seasonsList.addAll(seasons);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            simpleAdapter.notifyDataSetChanged();
         }
     }
 }
