@@ -29,6 +29,10 @@
             android:name=".ShowActivity"
             android:label="@string/title_activity_show"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SeasonActivity"
+            android:label="@string/title_activity_season"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

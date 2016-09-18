@@ -1,5 +1,6 @@
 package uk.org.willmott.mediasyncer;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -83,6 +84,15 @@ public class MainActivity extends AppCompatActivity {
             traktService = new TraktService(this, null);
         }
         // ==============================
+
+
+        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Go straight to the family guy show to speed things up.
+        Intent intent = new Intent(this, ShowActivity.class);
+        // Get the ID of the show we've clicked on
+        intent.putExtra("id", "1425");
+        startActivity(intent);
+        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
     /**

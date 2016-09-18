@@ -12,12 +12,12 @@
     <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/show_nest_scrollview"
+        android:id="@+id/season_nest_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="uk.org.willmott.mediasyncer.ShowActivity"
-        tools:showIn="@layout/activity_show">
+        tools:context="uk.org.willmott.mediasyncer.SeasonActivity"
+        tools:showIn="@layout/activity_season">
 
         <LinearLayout
             android:orientation="vertical"
@@ -25,11 +25,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true">
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recyclerview_next_episode">
-            </android.support.v7.widget.RecyclerView>
 
             <TextView
                 android:layout_width="wrap_content"
