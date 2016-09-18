@@ -61,11 +61,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         TextView title = holder.title;
         title.setText("Episode ".concat(episode.number.toString()));
         TextView info = holder.info;
-        info.setText(episode.first_aired.toString());
+        String episodeInfoString = "First aired: " + episode.first_aired.getDayOfMonth() + "/" +
+                episode.first_aired.getMonthOfYear() + "/" + episode.first_aired.getYear();
+        info.setText(episodeInfoString);
         ImageView imageView = holder.image;
 
         if (episode.images.screenshot.thumb != null) {
-            Picasso.with(mContext).load(episode.images.screenshot.thumb).resize(54,80).into(imageView);
+            Picasso.with(mContext).load(episode.images.screenshot.thumb).centerCrop().resize(54,80).into(imageView);
         }
     }
 
