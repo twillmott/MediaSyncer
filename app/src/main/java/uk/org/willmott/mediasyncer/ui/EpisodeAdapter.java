@@ -16,6 +16,7 @@ import com.uwetrottmann.trakt5.entities.Season;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
  * The adapter used to display the episode list items (in a RecycleView). It uses picasso to load the
@@ -26,10 +27,12 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
     private List<Episode> mEpisodes;
     private Context mContext;
+    private TraktService traktService;
 
-    public EpisodeAdapter(Context context, List<Episode> episodes) {
+    public EpisodeAdapter(Context context, List<Episode> episodes, TraktService traktService) {
         mEpisodes = episodes;
         mContext = context;
+        this.traktService = traktService;
     }
 
     // Easy access to the context object in the recyclerview

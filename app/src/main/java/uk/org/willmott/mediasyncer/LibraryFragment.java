@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,8 +41,6 @@ public class LibraryFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    // The service that communicates with trakt.
-    private TraktService traktService;
     // The content type that we're displaying in this tab (TV or Movies).
     private ContentType contentType;
     // The list that represents the list item. It contains a hashmap that contains all the data
@@ -68,15 +67,13 @@ public class LibraryFragment extends Fragment {
     public LibraryFragment() {
     }
 
+    public TraktService getTraktService() { return ((MainActivity) getActivity()).getTraktService(); }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // State that we have items that we want to put in the action bar.
         setHasOptionsMenu(true);
-
-        // Don't put any Trakt code in here, it may get run prior to the authorisation
-        // in the main activity.
-        traktService = ((MainActivity) this.getActivity()).getTraktService();
 
         // ========== Get our view =============
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
@@ -85,7 +82,7 @@ public class LibraryFragment extends Fragment {
         // Set up the recycler view to dispaly the list of shows that we just loaded.
         // Extra info will be loaded within the list view
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_library);
-        libraryAdapter = new LibraryAdapter(getContext(), showsList, traktService);
+        libraryAdapter = new LibraryAdapter(getContext(), showsList, getTraktService());
         recyclerView.setAdapter(libraryAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -138,6 +135,8 @@ public class LibraryFragment extends Fragment {
         @Override
         protected List<BaseShow> doInBackground(Void... params) {
 
+            TraktService traktService = getTraktService();
+
             // Get all of the users shows, with the minimum information.
             // Get the users watchlist
             List<BaseShow> watchlistShows = traktService.getShowWatchlist();
@@ -169,7 +168,7 @@ public class LibraryFragment extends Fragment {
 
             // If we returned no shows, say so
             if (shows.size() == 0) {
-                Toast.makeText((MainActivity) LibraryFragment.this.getActivity(), "Unable to find any shows, check authorisation.", 1000);
+                Toast.makeText((MainActivity) LibraryFragment.this.getActivity(), "Unable to find any shows, check authorisation.", Toast.LENGTH_LONG).show();
             }
         }
     }

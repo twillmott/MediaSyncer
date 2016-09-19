@@ -48,15 +48,23 @@ public class TraktService {
 
     /**
      * Contructor for this class that checks the authentication. Supply a null code to check authentication,
-     * supply a valid code to continue authentication. Context is required.
+     * supply a valid code to continue authentication. Context is required. This is used when we
+     * don't know the access token.
      */
     public TraktService(Context context, String code) {
         checkAuthentication(context, code);
     }
 
+    /**
+     * Constructor for creating a trakt service when you know the access token.
+     */
+    public TraktService(String accessToken) { trakt.accessToken(accessToken); }
+
     public TraktV2 getTrakt() {
         return trakt;
     }
+
+    public String getAccessToken() { return trakt.accessToken(); }
 
     /**
      * This service checks that we have authentication. If we don't have it, we get it and save it.

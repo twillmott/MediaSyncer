@@ -12,14 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import com.uwetrottmann.trakt5.entities.Season;
+import com.uwetrottmann.trakt5.entities.Show;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.util.ArrayList;
@@ -31,16 +28,13 @@ import uk.org.willmott.mediasyncer.ui.SeasonAdapter;
 /**
  * The fragment that goes in the over view tab on the shows screen.
  */
-public class SeriesFragment extends Fragment {
+public class SeasonFragment extends Fragment {
 
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-
-    // An instance of the traktService for communicating with trakt
-    TraktService traktService;
 
     // The show ID for the show we've loaded.
     String showId;
@@ -52,16 +46,18 @@ public class SeriesFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static SeriesFragment newInstance(int sectionNumber) {
-        SeriesFragment fragment = new SeriesFragment();
+    public static SeasonFragment newInstance(int sectionNumber) {
+        SeasonFragment fragment = new SeasonFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public SeriesFragment() {
+    public SeasonFragment() {
     }
+
+    public TraktService getTraktService() { return ((ShowActivity) getActivity()).getTraktService(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,8 +65,6 @@ public class SeriesFragment extends Fragment {
         // =================== Get the view ==================
         View rootView = inflater.inflate(R.layout.fragment_series, container, false);
 
-        // ================ Get the parents instance of trakt ===========
-        traktService = ((ShowActivity) this.getActivity()).getTraktService();
         // Get the ID of the show that we're loading form the parent activity
         showId = ((ShowActivity) this.getActivity()).getShowId();
 
@@ -80,7 +74,7 @@ public class SeriesFragment extends Fragment {
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
-        SeasonAdapter adapter = new SeasonAdapter(getContext(), seasonsList, showId);
+        SeasonAdapter adapter = new SeasonAdapter(getContext(), seasonsList, showId, getTraktService());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -99,7 +93,7 @@ public class SeriesFragment extends Fragment {
             // Try filling the list of seasons up from a trakt call.
             List<Season> seasons = new ArrayList<>();
             try {
-                seasons = traktService.getTrakt().seasons().summary(showId, Extended.FULLIMAGES).execute().body();
+                seasons = getTraktService().getTrakt().seasons().summary(showId, Extended.FULLIMAGES).execute().body();
             } catch (Exception e) {
                 Log.e("Trakt", e.getMessage());
             }

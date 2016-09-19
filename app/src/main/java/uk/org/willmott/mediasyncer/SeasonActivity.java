@@ -61,9 +61,7 @@ public class SeasonActivity extends AppCompatActivity {
         // Get the ID of the show we're displaying
         showId = getIntent().getStringExtra("id");
         seasonNumber = getIntent().getIntExtra("season", 0);
-
-        // Set up a trakt service
-        traktService = new TraktService(SeasonActivity.this, null);
+        traktService = new TraktService(getIntent().getStringExtra("accessToken"));
 
         // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.season_toolbar);
@@ -109,7 +107,7 @@ public class SeasonActivity extends AppCompatActivity {
             //show = traktService.getShow(showId);
             List<Season> seasons = new ArrayList<>();
             try {
-                seasons = traktService.getTrakt().seasons().summary(showId, Extended.FULLIMAGES).execute().body();
+                seasons = getTraktService().getTrakt().seasons().summary(showId, Extended.FULLIMAGES).execute().body();
             } catch (IOException e) {
                 e.printStackTrace();
             }

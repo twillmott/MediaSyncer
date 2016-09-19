@@ -18,6 +18,7 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.SeasonActivity;
 import uk.org.willmott.mediasyncer.ShowActivity;
+import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
  * The adapter used to display the season list items (in a RecycleView). It uses picasso to load the
@@ -29,11 +30,13 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
     private List<Season> mSeasons;
     private Context mContext;
     private String showId;
+    private TraktService traktService;
 
-    public SeasonAdapter(Context context, List<Season> seasons, String showId) {
+    public SeasonAdapter(Context context, List<Season> seasons, String showId, TraktService traktService) {
         mSeasons = seasons;
         mContext = context;
         this.showId = showId;
+        this.traktService = traktService;
     }
 
     // Easy access to the context object in the recyclerview
@@ -109,6 +112,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
                     // Put the id in to the intent
                     intent.putExtra("id", showId);
                     intent.putExtra("season", seasonNumber);
+                    intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);
                     ((ShowActivity)view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

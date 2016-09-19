@@ -119,6 +119,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                     String showId = LibraryAdapter.this.mBaseShows.get(getAdapterPosition()).show.ids.trakt.toString();
                     // Put the id in to the intent
                     intent.putExtra("id", showId);
+                    intent.putExtra("accessToken", traktService.getAccessToken());
                     view.getContext().startActivity(intent);
                 }
             });

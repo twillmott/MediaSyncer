@@ -2,24 +2,19 @@ package uk.org.willmott.mediasyncer;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.Show;
-
-import java.util.concurrent.ExecutionException;
 
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -44,7 +39,7 @@ public class ShowActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    public TraktService getTraktService() {return traktService;}
+    public TraktService getTraktService() { return traktService; }
 
     public String getShowId() {return showId;}
 
@@ -55,9 +50,7 @@ public class ShowActivity extends AppCompatActivity {
 
         // Get the ID of the show we're displaying
         showId = getIntent().getStringExtra("id");
-
-        // Set up a trakt service
-        traktService = new TraktService(ShowActivity.this, null);
+        traktService = new TraktService(getIntent().getStringExtra("accessToken"));
 
         // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
@@ -118,7 +111,7 @@ public class ShowActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            show = traktService.getShow(showId);
+            show = getTraktService().getShow(showId);
             return null;
         }
 
@@ -155,7 +148,7 @@ public class ShowActivity extends AppCompatActivity {
                 case 0:
                     return ShowOverviewFragment.newInstance(position);
                 case 1:
-                    return SeriesFragment.newInstance(position);
+                    return SeasonFragment.newInstance(position);
                 default: // This will only display if something weird messes up
                     return PlaceholderFragment.newInstance(position + 1);
             }

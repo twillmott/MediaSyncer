@@ -38,9 +38,6 @@ public class EpisodesFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
 
-    // An instance of the traktService for communicating with trakt
-    TraktService traktService;
-
     // The show ID for the show we've loaded.
     String showId;
 
@@ -65,6 +62,8 @@ public class EpisodesFragment extends Fragment {
     public EpisodesFragment() {
     }
 
+    public TraktService getTraktService() { return ((SeasonActivity) getActivity()).getTraktService(); }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,7 +71,6 @@ public class EpisodesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_series, container, false);
 
         // ================ Get the parents instance of trakt ===========
-        traktService = ((SeasonActivity) this.getActivity()).getTraktService();
         // Get the ID of the show that we're loading form the parent activity
         showId = ((SeasonActivity) this.getActivity()).getShowId();
         seasonNumber = ((SeasonActivity) this.getActivity()).getSeason();
@@ -83,7 +81,7 @@ public class EpisodesFragment extends Fragment {
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
-        EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList);
+        EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList, getTraktService());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -102,7 +100,7 @@ public class EpisodesFragment extends Fragment {
             // Try filling the list of seasons up from a trakt call.
             List<Episode> episodes = new ArrayList<>();
             try {
-                episodes = traktService.getTrakt().seasons().season(showId, seasonNumber, Extended.FULLIMAGES).execute().body();
+                episodes = getTraktService().getTrakt().seasons().season(showId, seasonNumber, Extended.FULLIMAGES).execute().body();
             } catch (Exception e) {
                 Log.e("Trakt", e.getMessage());
             }
