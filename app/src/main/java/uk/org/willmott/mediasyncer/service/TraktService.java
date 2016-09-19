@@ -85,6 +85,7 @@ public class TraktService {
                     sharedPref.edit().putString(context.getString(R.string.trakt_access_token_preference), accessTokenResponse.body().access_token).apply();
                     sharedPref.edit().putString(context.getString(R.string.trakt_refresh_token_preference), accessTokenResponse.body().refresh_token).apply();
 
+                    Log.i(LOG_TAG, "Media Syncer successfully authorised with trakt.");
                     return;
                 }
 
@@ -109,6 +110,19 @@ public class TraktService {
         }
     }
 
+    /**
+     * Reauthorise trakt from fresh. This includes opening the browser.
+     */
+    public void reauthorise(Context context) {
+
+        // Delete the auth keys from the shared preferences
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        sharedPref.edit().remove(context.getString(R.string.trakt_access_token_preference)).apply();
+        sharedPref.edit().remove(context.getString(R.string.trakt_refresh_token_preference)).apply();
+
+        checkAuthentication(context, null);
+    }
+
 
     /**
      * Get all the watched shows for the authorised user.
@@ -119,9 +133,10 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            return null;
+            Log.e(LOG_TAG, response.errorBody().string());
+            return new ArrayList<>();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_TAG, e.getMessage());
             return null;
         }
     }
@@ -135,7 +150,8 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            return null;
+            Log.e(LOG_TAG, response.errorBody().string());
+            return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -151,7 +167,8 @@ public class TraktService {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            return null;
+            Log.e(LOG_TAG, response.errorBody().string());
+            return new ArrayList<>();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.uwetrottmann.trakt5.entities.BaseShow;
 
@@ -38,11 +39,6 @@ public class LibraryFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-
-    // The below values are used as keys to link information to it's relating list viewfield.
-    private static final String LIST_TITLE = "title";
-    private static final String LIST_IMAGE = "image_url";
-    private static final String LIST_DETAILS = "details";
 
     // The service that communicates with trakt.
     private TraktService traktService;
@@ -137,10 +133,10 @@ public class LibraryFragment extends Fragment {
      * Retrieve all of the users library info. This will have to be extended to include movies when
      * we add that functionality.
      */
-    private class RetrieveLibraryInfo extends AsyncTask<Void, Void, Void> {
+    private class RetrieveLibraryInfo extends AsyncTask<Void, Void, List<BaseShow>> {
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected List<BaseShow> doInBackground(Void... params) {
 
             // Get all of the users shows, with the minimum information.
             // Get the users watchlist
@@ -161,15 +157,20 @@ public class LibraryFragment extends Fragment {
                 showsList.add(traktService.combineBaseShows(show, showProgress));
             }
 
-            return null;
+            return shows;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(List<BaseShow> shows) {
+            super.onPostExecute(shows);
             libraryAdapter.notifyDataSetChanged();
             // Stop the refresh button spinner.
             refresh.setActionView(null);
+
+            // If we returned no shows, say so
+            if (shows.size() == 0) {
+                Toast.makeText((MainActivity) LibraryFragment.this.getActivity(), "Unable to find any shows, check authorisation.", 1000);
+            }
         }
     }
 }

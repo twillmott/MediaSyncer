@@ -86,13 +86,13 @@ public class MainActivity extends AppCompatActivity {
         // ==============================
 
 //        Uncomment me to go straight to family guy
-//        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        // Go straight to the family guy show to speed things up.
-//        Intent intent = new Intent(this, ShowActivity.class);
-//        // Get the ID of the show we've clicked on
-//        intent.putExtra("id", "1425");
-//        startActivity(intent);
-//        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Go straight to the family guy show to speed things up.
+        Intent intent = new Intent(this, ShowActivity.class);
+        // Get the ID of the show we've clicked on
+        intent.putExtra("id", "1425");
+        startActivity(intent);
+        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
     /**
@@ -132,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if (id == R.id.reauthorise) {
+            traktService.reauthorise(this);
         }
         return super.onOptionsItemSelected(item);
     }
