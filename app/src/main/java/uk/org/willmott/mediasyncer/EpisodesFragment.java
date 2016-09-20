@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.uwetrottmann.trakt5.entities.Episode;
-import com.uwetrottmann.trakt5.entities.Season;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.List;
 
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.EpisodeAdapter;
-import uk.org.willmott.mediasyncer.ui.SeasonAdapter;
 
 /**
  * The fragment that goes in the over view tab on the shows screen.
@@ -68,7 +66,7 @@ public class EpisodesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // =================== Get the view ==================
-        View rootView = inflater.inflate(R.layout.fragment_series, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_episodes, container, false);
 
         // ================ Get the parents instance of trakt ===========
         // Get the ID of the show that we're loading form the parent activity
@@ -80,8 +78,9 @@ public class EpisodesFragment extends Fragment {
 
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_episodes);
         EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList, getTraktService());
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
