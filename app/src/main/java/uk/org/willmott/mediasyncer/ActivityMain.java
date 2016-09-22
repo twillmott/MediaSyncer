@@ -3,6 +3,7 @@ package uk.org.willmott.mediasyncer;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.preference.Preference;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,8 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
 
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -106,6 +109,8 @@ public class ActivityMain extends AppCompatActivity {
 //        intent.putExtra("id", "1425");
 //        startActivity(intent);
 //        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        new TestSMB().execute();
     }
 
     /**
@@ -201,6 +206,30 @@ public class ActivityMain extends AppCompatActivity {
                     return "SECTION 3";
             }
             return "Error - This should not be a tab";
+        }
+    }
+
+    private class TestSMB extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            SmbFile[] domains = null;
+            try {
+                domains = (new SmbFile("smb://192.168.0.11/Samsung/")).listFiles();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                ;
+            }
+
+            int i = 0;
+
+            for (SmbFile smbFile : domains) {
+                i++;
+
+            }
+            System.out.println(i);
+            return null;
         }
     }
 }
