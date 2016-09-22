@@ -6,6 +6,18 @@
         android:summary="@string/pref_description_social_recommendations"
         android:title="@string/pref_title_social_recommendations" />
 
+    <com.github.angads25.filepicker.view.FilePickerPreference
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:key="your_preference_key"
+        android:title="Download Location"
+        android:summary="Just a Summary"
+        android:defaultValue="/mnt"
+        app:error_dir="/mnt"
+        app:root_dir="/sdcard"
+        app:selection_mode="single_mode"
+        app:selection_type="dir_select"
+        app:title_text="Title"/>
+
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <EditTextPreference
