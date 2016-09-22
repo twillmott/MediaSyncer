@@ -62,7 +62,7 @@ public class FragmentSeason extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // =================== Get the view ==================
-        View rootView = inflater.inflate(R.layout.fragment_series, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_season, container, false);
 
         // Get the ID of the show that we're loading form the parent activity
         showId = ((ActivityShow) this.getActivity()).getShowId();
@@ -72,7 +72,8 @@ public class FragmentSeason extends Fragment {
 
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_season);
+        recyclerView.setNestedScrollingEnabled(false);
         SeasonAdapter adapter = new SeasonAdapter(getContext(), seasonsList, showId, getTraktService());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

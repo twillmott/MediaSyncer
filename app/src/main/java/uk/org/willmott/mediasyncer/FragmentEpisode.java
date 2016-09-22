@@ -66,7 +66,7 @@ public class FragmentEpisode extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // =================== Get the view ==================
-        View rootView = inflater.inflate(R.layout.fragment_series, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_episodes, container, false);
 
         // ================ Get the parents instance of trakt ===========
         // Get the ID of the show that we're loading form the parent activity
@@ -78,8 +78,9 @@ public class FragmentEpisode extends Fragment {
 
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_series);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_episodes);
         EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList, getTraktService());
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

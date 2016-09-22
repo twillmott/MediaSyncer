@@ -22,7 +22,7 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/recyclerview_series">
+            android:id="@+id/recyclerview_season">
         </android.support.v7.widget.RecyclerView>
 
     </android.support.v4.widget.NestedScrollView>
