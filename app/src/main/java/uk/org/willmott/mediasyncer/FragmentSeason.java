@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.uwetrottmann.trakt5.entities.Season;
-import com.uwetrottmann.trakt5.entities.Show;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import uk.org.willmott.mediasyncer.ui.SeasonAdapter;
 /**
  * The fragment that goes in the over view tab on the shows screen.
  */
-public class SeasonFragment extends Fragment {
+public class FragmentSeason extends Fragment {
 
     /**
      * The fragment argument representing the section number for this
@@ -46,18 +45,18 @@ public class SeasonFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static SeasonFragment newInstance(int sectionNumber) {
-        SeasonFragment fragment = new SeasonFragment();
+    public static FragmentSeason newInstance(int sectionNumber) {
+        FragmentSeason fragment = new FragmentSeason();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public SeasonFragment() {
+    public FragmentSeason() {
     }
 
-    public TraktService getTraktService() { return ((ShowActivity) getActivity()).getTraktService(); }
+    public TraktService getTraktService() { return ((ActivityShow) getActivity()).getTraktService(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +65,7 @@ public class SeasonFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_series, container, false);
 
         // Get the ID of the show that we're loading form the parent activity
-        showId = ((ShowActivity) this.getActivity()).getShowId();
+        showId = ((ActivityShow) this.getActivity()).getShowId();
 
         // =============== Fetch the series info from trakt ========================
         new RetrieveSeries().execute();

@@ -16,8 +16,8 @@ import com.uwetrottmann.trakt5.entities.Season;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.R;
-import uk.org.willmott.mediasyncer.SeasonActivity;
-import uk.org.willmott.mediasyncer.ShowActivity;
+import uk.org.willmott.mediasyncer.ActivitySeason;
+import uk.org.willmott.mediasyncer.ActivityShow;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
@@ -106,7 +106,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
                 @Override
                 public void onClick(View view) {
 
-                    Intent intent = new Intent(view.getContext(), SeasonActivity.class);
+                    Intent intent = new Intent(view.getContext(), ActivitySeason.class);
                     // Get the ID of the show we've clicked on
                     int seasonNumber = SeasonAdapter.this.mSeasons.get(getAdapterPosition()).number;
                     // Put the id in to the intent
@@ -115,7 +115,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
                     intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);
-                    ((ShowActivity)view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    ((ActivityShow)view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
                 }
             });

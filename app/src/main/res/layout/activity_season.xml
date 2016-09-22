@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="uk.org.willmott.mediasyncer.SeasonActivity">
+    tools:context=".ActivitySeason">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/season_app_bar"

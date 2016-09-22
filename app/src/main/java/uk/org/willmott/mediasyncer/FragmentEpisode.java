@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.uwetrottmann.trakt5.entities.Episode;
-import com.uwetrottmann.trakt5.entities.Season;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.util.ArrayList;
@@ -24,12 +23,11 @@ import java.util.List;
 
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.EpisodeAdapter;
-import uk.org.willmott.mediasyncer.ui.SeasonAdapter;
 
 /**
  * The fragment that goes in the over view tab on the shows screen.
  */
-public class EpisodesFragment extends Fragment {
+public class FragmentEpisode extends Fragment {
 
     /**
      * The fragment argument representing the section number for this
@@ -51,18 +49,18 @@ public class EpisodesFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static EpisodesFragment newInstance(int sectionNumber) {
-        EpisodesFragment fragment = new EpisodesFragment();
+    public static FragmentEpisode newInstance(int sectionNumber) {
+        FragmentEpisode fragment = new FragmentEpisode();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public EpisodesFragment() {
+    public FragmentEpisode() {
     }
 
-    public TraktService getTraktService() { return ((SeasonActivity) getActivity()).getTraktService(); }
+    public TraktService getTraktService() { return ((ActivitySeason) getActivity()).getTraktService(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,8 +70,8 @@ public class EpisodesFragment extends Fragment {
 
         // ================ Get the parents instance of trakt ===========
         // Get the ID of the show that we're loading form the parent activity
-        showId = ((SeasonActivity) this.getActivity()).getShowId();
-        seasonNumber = ((SeasonActivity) this.getActivity()).getSeason();
+        showId = ((ActivitySeason) this.getActivity()).getShowId();
+        seasonNumber = ((ActivitySeason) this.getActivity()).getSeason();
 
         // =============== Fetch the series info from trakt ========================
         new RetrieveEpisodes().execute();

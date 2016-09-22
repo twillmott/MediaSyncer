@@ -15,7 +15,7 @@ import android.widget.TextView;
 /**
  * The fragment that goes in the over view tab on the shows screen.
  */
-public class ShowOverviewFragment extends Fragment {
+public class FragmentShowOverview extends Fragment {
 
     /**
      * The fragment that displays the show overview for the show tabs in the show activity.
@@ -26,15 +26,15 @@ public class ShowOverviewFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static ShowOverviewFragment newInstance(int sectionNumber) {
-        ShowOverviewFragment fragment = new ShowOverviewFragment();
+    public static FragmentShowOverview newInstance(int sectionNumber) {
+        FragmentShowOverview fragment = new FragmentShowOverview();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public ShowOverviewFragment() {
+    public FragmentShowOverview() {
     }
 
     @Override

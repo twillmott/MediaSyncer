@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +33,7 @@ import uk.org.willmott.mediasyncer.ui.LibraryAdapter;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LibraryFragment extends Fragment {
+public class FragmentLibrary extends Fragment {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -56,18 +55,18 @@ public class LibraryFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static LibraryFragment newInstance(int sectionNumber) {
-        LibraryFragment fragment = new LibraryFragment();
+    public static FragmentLibrary newInstance(int sectionNumber) {
+        FragmentLibrary fragment = new FragmentLibrary();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public LibraryFragment() {
+    public FragmentLibrary() {
     }
 
-    public TraktService getTraktService() { return ((MainActivity) getActivity()).getTraktService(); }
+    public TraktService getTraktService() { return ((ActivityMain) getActivity()).getTraktService(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,7 +92,7 @@ public class LibraryFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
 //        // Start by finding out what type of content we want to display.
-//        contentType = ((MainActivity) this.getActivity()).getContentType();
+//        contentType = ((ActivityMain) this.getActivity()).getContentType();
 //
 //        if (contentType == ContentType.TV) {
 //        }
@@ -168,7 +167,7 @@ public class LibraryFragment extends Fragment {
 
             // If we returned no shows, say so
             if (shows.size() == 0) {
-                Toast.makeText((MainActivity) LibraryFragment.this.getActivity(), "Unable to find any shows, check authorisation.", Toast.LENGTH_LONG).show();
+                Toast.makeText((ActivityMain) FragmentLibrary.this.getActivity(), "Unable to find any shows, check authorisation.", Toast.LENGTH_LONG).show();
             }
         }
     }

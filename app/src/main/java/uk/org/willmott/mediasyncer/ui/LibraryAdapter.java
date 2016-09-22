@@ -2,9 +2,7 @@ package uk.org.willmott.mediasyncer.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +12,11 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.BaseShow;
-import com.uwetrottmann.trakt5.entities.Show;
 
-import org.w3c.dom.Text;
-
-import java.util.HashMap;
 import java.util.List;
 
+import uk.org.willmott.mediasyncer.ActivityShow;
 import uk.org.willmott.mediasyncer.R;
-import uk.org.willmott.mediasyncer.ShowActivity;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
@@ -114,7 +108,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(view.getContext(), ShowActivity.class);
+                    Intent intent = new Intent(view.getContext(), ActivityShow.class);
                     // Get the ID of the show we've clicked on
                     String showId = LibraryAdapter.this.mBaseShows.get(getAdapterPosition()).show.ids.trakt.toString();
                     // Put the id in to the intent

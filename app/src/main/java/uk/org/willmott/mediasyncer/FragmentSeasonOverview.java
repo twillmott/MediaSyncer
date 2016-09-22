@@ -1,7 +1,7 @@
 package uk.org.willmott.mediasyncer;
 
 /**
- * Default fragment template.
+ * Fragment for the show overview section on the shows screen tab.
  * Created by tomwi on 05/09/2016.
  */
 
@@ -13,12 +13,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * A placeholder fragment containing a simple view.
+ * The fragment that goes in the over view tab on the shows screen.
  */
-public class PlaceholderFragment extends Fragment {
+public class FragmentSeasonOverview extends Fragment {
+
     /**
-     * The fragment argument representing the section number for this
-     * fragment.
+     * The fragment that displays the show overview for the show tabs in the show activity.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -26,23 +26,23 @@ public class PlaceholderFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-        PlaceholderFragment fragment = new PlaceholderFragment();
+    public static FragmentSeasonOverview newInstance(int sectionNumber) {
+        FragmentSeasonOverview fragment = new FragmentSeasonOverview();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PlaceholderFragment() {
+    public FragmentSeasonOverview() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_season_overview, container, false);
         TextView textView = (TextView) rootView.findViewById(R.id.tempTextBox);
-        textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+        textView.setText(getString(R.string.large_text));
         return rootView;
     }
 }

@@ -1,6 +1,5 @@
 package uk.org.willmott.mediasyncer;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -19,7 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 //        Uncomment me to go straight to family guy
 //        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //        // Go straight to the family guy show to speed things up.
-//        Intent intent = new Intent(this, ShowActivity.class);
+//        Intent intent = new Intent(this, ActivityShow.class);
 //        // Get the ID of the show we've clicked on
 //        intent.putExtra("id", "1425");
 //        startActivity(intent);
@@ -154,17 +153,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
+            // Return a FragmentPlaceholder (defined as a static inner class below).
             // This is where we define all of the fragments in our activity.
             switch (position) {
                 case 0: // Left screen will be the alarm clock
-                    return LibraryFragment.newInstance(position);
+                    return FragmentLibrary.newInstance(position);
 //                case 1: // Middle screen will be live times
 //                    return LiveTubesFragment.newInstance(position);
 //                case 2: // Right screen will be a tube planner
 //                    return PlannerFragment.newInstance(position);
                 default: // This will only display if something weird messes up
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return FragmentPlaceholder.newInstance(position + 1);
             }
         }
 
