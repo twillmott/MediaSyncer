@@ -1,5 +1,6 @@
 package uk.org.willmott.mediasyncer;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -130,11 +131,14 @@ public class ActivityMain extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, ActivitySettings.class);
+            startActivity(intent);
             return true;
         }
 
         if (id == R.id.reauthorise) {
             traktService.reauthorise(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
