@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="56dp"
+    android:descendantFocusability="blocksDescendants"
+    android:weightSum="5"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/thumbnail"
+        android:visibility="visible"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:id="@+id/directory_library_list_image" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/centerContent"
+        android:visibility="visible"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/directory_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#555555"
+            android:typeface="sans"
+            android:layout_centerVertical="true"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="Directory Name"
+            android:gravity="center_vertical" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|right">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:background="@drawable/ic_keyboard_arrow_right_black_24px"
+            android:layout_marginRight="8dp" />
+    </RelativeLayout>
+</LinearLayout>

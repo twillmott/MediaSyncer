@@ -109,8 +109,6 @@ public class ActivityMain extends AppCompatActivity {
 //        intent.putExtra("id", "1425");
 //        startActivity(intent);
 //        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        new TestSMB().execute();
     }
 
     /**
@@ -206,30 +204,6 @@ public class ActivityMain extends AppCompatActivity {
                     return "SECTION 3";
             }
             return "Error - This should not be a tab";
-        }
-    }
-
-    private class TestSMB extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            SmbFile[] domains = null;
-            try {
-                domains = (new SmbFile("smb://192.168.0.11/Samsung/")).listFiles();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                ;
-            }
-
-            int i = 0;
-
-            for (SmbFile smbFile : domains) {
-                i++;
-
-            }
-            System.out.println(i);
-            return null;
         }
     }
 }
