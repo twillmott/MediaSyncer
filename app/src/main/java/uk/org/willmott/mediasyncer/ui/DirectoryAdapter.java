@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.URL;
 import java.util.List;
 
 import jcifs.smb.SmbFile;
@@ -20,12 +21,12 @@ import uk.org.willmott.mediasyncer.R;
  */
 public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
 
-    List<SmbFile> mSmbFiles;
+    List<URL> mDirectories;
     Context mContext;
     DirectoryClickListener directoryClickListener;
 
-    public DirectoryAdapter(Context context, DirectoryClickListener directoryClickListener, List<SmbFile> smbFiles) {
-        mSmbFiles = smbFiles;
+    public DirectoryAdapter(Context context, DirectoryClickListener directoryClickListener, List<URL> directories) {
+        mDirectories = directories;
         this.directoryClickListener = directoryClickListener;
         mContext = context;
     }
@@ -52,19 +53,19 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
      */
     @Override
     public void onBindViewHolder(DirectoryAdapter.ViewHolder holder, int position) {
-        SmbFile smbFile = mSmbFiles.get(position);
+        URL url = mDirectories.get(position);
 
         // Set up all the item views
         TextView title = holder.title;
         ImageView imageView = holder.image;
 
-        String file = smbFile.getURL().getFile();
+        String file = url.getFile();
 
         // Split the file path up by the forward slashes
         String[] fileParts = file.split("/");
 
-        if (fileParts.length == 0) {
-            title.setText(smbFile.getURL().getHost());
+        if (fileParts.length == 0 || (fileParts.length == 1 && fileParts[0].equals(""))) {
+            title.setText(url.getHost());
             imageView.setImageDrawable(mContext.getDrawable(R.drawable.ic_computer_black_24px));
         } else {
             title.setText(fileParts[fileParts.length - 1]);
@@ -74,7 +75,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
 
     @Override
     public int getItemCount() {
-        return mSmbFiles.size();
+        return mDirectories.size();
     }
 
     // Provide a direct reference to each of the views within a data item
@@ -98,7 +99,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    directoryClickListener.directorySelected(DirectoryAdapter.this.mSmbFiles.get(getAdapterPosition()).getURL().toString());
+                    directoryClickListener.directorySelected(DirectoryAdapter.this.mDirectories.get(getAdapterPosition()).toString());
                 }
             });
 
