@@ -1,9 +1,12 @@
 package uk.org.willmott.mediasyncer.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.DialogPreference;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -34,8 +37,11 @@ public class SambaFilePickerPreference extends DialogPreference implements Prefe
     // Keeping track of the current directory that we're in.
     private String currentDirectory = "/";
 
+    Context context;
+
     public SambaFilePickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         setPersistent(false);
         setOnPreferenceClickListener(this);
         setDialogLayoutResource(R.layout.directory_pop_up);
@@ -80,6 +86,22 @@ public class SambaFilePickerPreference extends DialogPreference implements Prefe
     }
 
     @Override
+    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
+        super.onPrepareDialogBuilder(builder);
+        builder.setTitle(null);
+    }
+
+    @Override
+    protected void onDialogClosed(boolean positiveResult) {
+        super.onDialogClosed(positiveResult);
+        if (positiveResult) {
+            setSummary(currentDirectory);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+            sharedPref.edit().putString(context.getString(R.string.pref_tv_show_source), currentDirectory).apply();
+        }
+    }
+
+    @Override
     public boolean onPreferenceClick(Preference preference) {
         return false;
     }
@@ -92,6 +114,7 @@ public class SambaFilePickerPreference extends DialogPreference implements Prefe
         currentDirectory = directory;
         new LoadSambaDirectory().execute(directory);
     }
+
 
     private class LoadSambaDirectory extends AsyncTask<String, Void, Void> {
 

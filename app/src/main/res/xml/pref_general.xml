@@ -18,7 +18,10 @@
         app:selection_type="dir_select"
         app:title_text="Title"/>
 
-    <uk.org.willmott.mediasyncer.ui.SambaFilePickerPreference />
+    <uk.org.willmott.mediasyncer.ui.SambaFilePickerPreference
+        android:title="TV Shows Samba Directory"
+        android:summary="Set the location of the source media."
+        android:key="tv_show_source" />
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->

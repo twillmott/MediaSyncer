@@ -182,6 +182,12 @@ public class ActivitySettings extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
+
+            // Set the directory summaries.
+            String tvShowSource = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_tv_show_source), null);
+            if (tvShowSource != null) {
+                getPreferenceManager().findPreference("tv_show_source").setSummary(tvShowSource);
+            }
         }
 
         @Override
