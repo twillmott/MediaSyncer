@@ -19,7 +19,6 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -183,35 +182,39 @@ public class ActivitySettings extends AppCompatPreferenceActivity {
 //            bindPreferenceSummaryToValue(findPreference("example_text"));
 //            bindPreferenceSummaryToValue(findPreference("example_list"));
 
-            Preference externalDownloads = findPreference("external_dl_switch");
+            final String tv_show_directory_key = getString(R.string.tv_show_source_key);
+            final String external_download_switch_key = getString(R.string.external_dl_switch_key);
+            final String external_tv_download_directory_key = getString(R.string.external_tv_download_key);
+
+            Preference externalDownloads = findPreference(external_download_switch_key);
             externalDownloads.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
 
                     if ((boolean) newValue == false) {
-                        findPreference("tv_show_external").setShouldDisableView(true);
-                        findPreference("tv_show_external").setEnabled(false);
+                        findPreference(external_tv_download_directory_key).setShouldDisableView(true);
+                        findPreference(external_tv_download_directory_key).setEnabled(false);
                     } else {
-                        findPreference("tv_show_external").setShouldDisableView(false);
-                        findPreference("tv_show_external").setEnabled(true);
+                        findPreference(external_tv_download_directory_key).setShouldDisableView(false);
+                        findPreference(external_tv_download_directory_key).setEnabled(true);
                     }
                     return true;
                 }
             });
 
             // Set the directory summaries.
-            String tvShowSource = getPreferenceManager().getSharedPreferences().getString("tv_show_source", null);
+            String tvShowSource = getPreferenceManager().getSharedPreferences().getString(tv_show_directory_key, null);
             if (tvShowSource != null) {
-                getPreferenceManager().findPreference("tv_show_source").setSummary(tvShowSource);
+                getPreferenceManager().findPreference(tv_show_directory_key).setSummary(tvShowSource);
             }
-            String tvShowExternal = getPreferenceManager().getSharedPreferences().getString("tv_show_external", null);
+            String tvShowExternal = getPreferenceManager().getSharedPreferences().getString(external_tv_download_directory_key, null);
             if (tvShowExternal != null) {
-                getPreferenceManager().findPreference("tv_show_external").setSummary(tvShowExternal);
+                getPreferenceManager().findPreference(external_tv_download_directory_key).setSummary(tvShowExternal);
             }
             // Disable external downloads by default.
-            if (!getPreferenceManager().getSharedPreferences().getBoolean("external_dl_switch", false)) {
-                getPreferenceManager().findPreference("tv_show_external").setShouldDisableView(true);
-                getPreferenceManager().findPreference("tv_show_external").setEnabled(false);
+            if (!getPreferenceManager().getSharedPreferences().getBoolean(external_download_switch_key, false)) {
+                getPreferenceManager().findPreference(external_tv_download_directory_key).setShouldDisableView(true);
+                getPreferenceManager().findPreference(external_tv_download_directory_key).setEnabled(false);
             }
         }
 
