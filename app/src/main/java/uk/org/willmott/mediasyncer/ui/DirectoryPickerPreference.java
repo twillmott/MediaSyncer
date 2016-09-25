@@ -81,13 +81,6 @@ public class DirectoryPickerPreference extends DialogPreference implements Prefe
             }
         });
 
-//        // Get samba shares on the first load.
-//        try {
-//            new LoadSambaDirectory().execute().get();
-//        } catch (Exception e) {
-//            Log.e(LOG_TAG, e.getMessage());
-//        }
-
         try {
             directoriesList.add(new URL("file", StorageType.SMB.toString(), ""));
             directoriesList.add(new URL("file", StorageType.INTERNAL.toString(), ""));
@@ -115,7 +108,7 @@ public class DirectoryPickerPreference extends DialogPreference implements Prefe
         if (positiveResult) {
             setSummary(currentDirectory);
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-            sharedPref.edit().putString(context.getString(R.string.pref_tv_show_source), currentDirectory).apply();
+            sharedPref.edit().putString(getKey(), currentDirectory).apply();
         }
     }
 

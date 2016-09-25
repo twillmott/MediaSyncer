@@ -183,10 +183,35 @@ public class ActivitySettings extends AppCompatPreferenceActivity {
 //            bindPreferenceSummaryToValue(findPreference("example_text"));
 //            bindPreferenceSummaryToValue(findPreference("example_list"));
 
+            Preference externalDownloads = findPreference("external_dl_switch");
+            externalDownloads.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                    if ((boolean) newValue == false) {
+                        findPreference("tv_show_external").setShouldDisableView(true);
+                        findPreference("tv_show_external").setEnabled(false);
+                    } else {
+                        findPreference("tv_show_external").setShouldDisableView(false);
+                        findPreference("tv_show_external").setEnabled(true);
+                    }
+                    return true;
+                }
+            });
+
             // Set the directory summaries.
-            String tvShowSource = getPreferenceManager().getSharedPreferences().getString(getString(R.string.pref_tv_show_source), null);
+            String tvShowSource = getPreferenceManager().getSharedPreferences().getString("tv_show_source", null);
             if (tvShowSource != null) {
                 getPreferenceManager().findPreference("tv_show_source").setSummary(tvShowSource);
+            }
+            String tvShowExternal = getPreferenceManager().getSharedPreferences().getString("tv_show_external", null);
+            if (tvShowExternal != null) {
+                getPreferenceManager().findPreference("tv_show_external").setSummary(tvShowExternal);
+            }
+            // Disable external downloads by default.
+            if (!getPreferenceManager().getSharedPreferences().getBoolean("external_dl_switch", false)) {
+                getPreferenceManager().findPreference("tv_show_external").setShouldDisableView(true);
+                getPreferenceManager().findPreference("tv_show_external").setEnabled(false);
             }
         }
 

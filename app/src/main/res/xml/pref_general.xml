@@ -1,15 +1,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
-
     <uk.org.willmott.mediasyncer.ui.DirectoryPickerPreference
-        android:title="TV Shows Samba Directory"
+        android:title="TV Show Source Directory"
         android:summary="Set the location of the source media."
         android:key="tv_show_source" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="external_dl_switch"
+        android:summary="Allow TV Shows and Movies to be downloaded to external storage."
+        android:title="Enable external media downloads" />
+
+    <uk.org.willmott.mediasyncer.ui.DirectoryPickerPreference
+        android:title="TV Show External Download Directory"
+        android:summary="Set the location for external downloads"
+        android:key="tv_show_external" />
+
 
     <!--&lt;!&ndash; NOTE: EditTextPreference accepts EditText attributes. &ndash;&gt;-->
     <!--&lt;!&ndash; NOTE: EditTextPreference's summary should be set to its value by the activity code. &ndash;&gt;-->
