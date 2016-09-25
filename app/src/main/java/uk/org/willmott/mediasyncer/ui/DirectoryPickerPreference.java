@@ -161,12 +161,15 @@ public class DirectoryPickerPreference extends DialogPreference implements Prefe
         currentDirectory = directoryPath;
         File directory = new File(directoryPath);
         List<URL> returnedFilePaths = new ArrayList<>();
-        for (File subDirecotry : directory.listFiles()) {
-            if (subDirecotry.isDirectory()) {
-                try {
-                    returnedFilePaths.add(new URL("file", "", subDirecotry.getAbsolutePath()));
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, e.getMessage());
+        File[] subDirectories = directory.listFiles();
+        if (subDirectories != null) {
+            for (File subDirecotry : subDirectories) {
+                if (subDirecotry.isDirectory()) {
+                    try {
+                        returnedFilePaths.add(new URL("file", "", subDirecotry.getAbsolutePath()));
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, e.getMessage());
+                    }
                 }
             }
         }
