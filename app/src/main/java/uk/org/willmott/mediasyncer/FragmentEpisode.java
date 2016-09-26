@@ -79,7 +79,7 @@ public class FragmentEpisode extends Fragment {
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_episodes);
-        EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList, getTraktService());
+        EpisodeAdapter adapter = new EpisodeAdapter(getContext(), episodesList, getTraktService(), showId, seasonNumber);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

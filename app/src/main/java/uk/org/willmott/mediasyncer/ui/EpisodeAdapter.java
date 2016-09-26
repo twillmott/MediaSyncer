@@ -1,6 +1,7 @@
 package uk.org.willmott.mediasyncer.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,10 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.Episode;
-import com.uwetrottmann.trakt5.entities.Season;
 
 import java.util.List;
 
+import uk.org.willmott.mediasyncer.ActivityEpisode;
 import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -28,11 +29,15 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     private List<Episode> mEpisodes;
     private Context mContext;
     private TraktService traktService;
+    private String showId;
+    private int seasonNumber;
 
-    public EpisodeAdapter(Context context, List<Episode> episodes, TraktService traktService) {
+    public EpisodeAdapter(Context context, List<Episode> episodes, TraktService traktService, String showId, int seasonNumber) {
         mEpisodes = episodes;
         mContext = context;
         this.traktService = traktService;
+        this.showId = showId;
+        this.seasonNumber = seasonNumber;
     }
 
     // Easy access to the context object in the recyclerview
@@ -81,7 +86,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView title;
@@ -103,7 +108,16 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "Need to implement a click action", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(view.getContext(), ActivityEpisode.class);
+                    // Get the ID of the show we've clicked on
+                    int episodeNumber = EpisodeAdapter.this.mEpisodes.get(getAdapterPosition()).number;
+                    // Put the id in to the intent
+                    intent.putExtra("id", showId);
+                    intent.putExtra("season", seasonNumber);
+                    intent.putExtra("episode", episodeNumber);
+                    intent.putExtra("accessToken", traktService.getAccessToken());
+
+                    view.getContext().startActivity(intent);
                 }
             });
 

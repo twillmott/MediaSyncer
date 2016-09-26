@@ -46,6 +46,10 @@
             android:label="@string/title_activity_season"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ActivityEpisode"
+            android:label="@string/title_activity_season"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".ActivitySettings"
             android:label="@string/title_activity_activity_settings"></activity>
     </application>

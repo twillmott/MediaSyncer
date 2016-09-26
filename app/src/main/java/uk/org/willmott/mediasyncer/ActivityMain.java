@@ -87,11 +87,11 @@ public class ActivityMain extends AppCompatActivity {
 
 //        Uncomment me to go straight to family guy
 //        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        // Go straight to the family guy show to speed things up.
-//        Intent intent = new Intent(this, ActivityShow.class);
-//        // Get the ID of the show we've clicked on
-//        intent.putExtra("id", "1425");
-//        startActivity(intent);
+        // Go straight to the family guy show to speed things up.
+        Intent intent = new Intent(this, ActivityShow.class);
+        // Get the ID of the show we've clicked on
+        intent.putExtra("id", "1425");
+        startActivity(intent);
 //        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
