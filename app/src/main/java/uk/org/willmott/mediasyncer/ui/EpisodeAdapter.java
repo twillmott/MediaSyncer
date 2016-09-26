@@ -16,6 +16,7 @@ import com.uwetrottmann.trakt5.entities.Episode;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.ActivityEpisode;
+import uk.org.willmott.mediasyncer.ActivitySeason;
 import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -118,6 +119,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
                     intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);
+                    ((ActivitySeason) view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
             });
 

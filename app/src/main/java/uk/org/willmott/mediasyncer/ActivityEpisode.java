@@ -104,9 +104,12 @@ public class ActivityEpisode extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.episode_toolbar);
-            toolbar.setTitle("Episode " + episode.number.toString());
+            toolbar.setTitle("Episode " + episode.number.toString() + ": " + episode.title);
             ImageView imageView = (ImageView) findViewById(R.id.episode_banner);
-            String url = episode.images.thumb.full;
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
+            String url = episode.images.screenshot.full;
             Picasso.with(ActivityEpisode.this).load(url).into(imageView);
         }
     }

@@ -127,6 +127,9 @@ public class ActivitySeason extends AppCompatActivity {
             Toolbar toolbar = (Toolbar) findViewById(R.id.season_toolbar);
             toolbar.setTitle("Season " + season.number.toString());
             ImageView imageView = (ImageView) findViewById(R.id.season_banner);
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
             String url = season.images.thumb.full;
             Picasso.with(ActivitySeason.this).load(url).into(imageView);
         }

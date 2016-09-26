@@ -123,6 +123,9 @@ public class ActivityShow extends AppCompatActivity {
             Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
             toolbar.setTitle(show.title);
             ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
             String url = show.images.thumb.full;
             Picasso.with(ActivityShow.this).load(url).into(imageView);
         }
