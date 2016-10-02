@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,8 +15,15 @@ import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.enums.Extended;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import uk.org.willmott.mediasyncer.imdb.service.ImdbApiEndpoint;
+import uk.org.willmott.mediasyncer.imdb.service.ImdbService;
+import uk.org.willmott.mediasyncer.model.Actor;
 import uk.org.willmott.mediasyncer.service.TraktService;
+import uk.org.willmott.mediasyncer.tvdb.service.TheTvdbService;
+import uk.org.willmott.mediasyncer.ui.ActorAdapter;
 
 public class ActivityEpisode extends AppCompatActivity {
 
@@ -32,6 +40,14 @@ public class ActivityEpisode extends AppCompatActivity {
 
     // The episode that we're displaying
     Episode episode;
+
+    // List of actors to display in the episode
+    List<Actor> actorList = new ArrayList<>();
+    // The corresponding adapter
+    ActorAdapter actorAdapter;
+
+    TheTvdbService tvdbService = new TheTvdbService();
+    ImdbService imdbService = new ImdbService();
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -57,7 +73,7 @@ public class ActivityEpisode extends AppCompatActivity {
         episodeNumber = getIntent().getIntExtra("episode", 0);
         traktService = new TraktService(getIntent().getStringExtra("accessToken"));
 
-        // Set up the toolbar
+        // ============= Set up the toolbar =====================
         Toolbar toolbar = (Toolbar) findViewById(R.id.episode_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
@@ -67,16 +83,28 @@ public class ActivityEpisode extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        // ================================================================
+        // ======================================================
 
+        TextView textView = (TextView) findViewById(R.id.episode_info_text);
+        textView.setText("Hello");
 
-        TextView textView = (TextView) findViewById(R.id.tempTextBox);
-        textView.setText(getString(R.string.large_text));
+        // =================== Set up the actor scroller ========================
+        // Set up the recycler view to dispaly the list of shows that we just loaded.
+        // Extra info will be loaded within the list view
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.episode_actors_recyclerview);
+        actorAdapter = new ActorAdapter(this, actorList);
+        recyclerView.setAdapter(actorAdapter);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Download the show information. We have a .get() on the end so that we wait until
         // all the info is loaded before we load the screen.
         try {
+            // Get all the episode info that's required on page load
             new RetrieveEpisodeInfo().execute().get();
+
+            // Start off the tasks to populate all the non esential stuff
+            new PopulateActors().execute();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,5 +147,28 @@ public class ActivityEpisode extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    private class PopulateActors extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            uk.org.willmott.mediasyncer.tvdb.model.Episode tvdbEpisode = tvdbService.getEpisode(episode.ids.tvdb.toString());
+
+            if (actorList.size() > 0) {
+                actorList.clear();
+            }
+
+            for (String actor : tvdbEpisode.getData().getGuestStars()) {
+                actorList.add(new Actor(imdbService.getActorImage(actor), actor));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            actorAdapter.notifyDataSetChanged();
+        }
     }
 }

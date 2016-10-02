@@ -61,19 +61,76 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <Button
+                    android:text="Play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:id="@+id/episode_play_button"
+                    android:layout_gravity="center"
+                    android:layout_weight="2" />
+
+                <Button
+                    android:text="Watched"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:id="@+id/episode_watched_button"
+                    android:layout_gravity="center"
+                    android:layout_weight="2" />
+
+                <Button
+                    android:text="Collected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:id="@+id/episode_collected_button"
+                    android:layout_gravity="center"
+                    android:layout_weight="2" />
+
+                <Button
+                    android:text="Download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:id="@+id/episode_download_button"
+                    android:layout_gravity="center"
+                    android:layout_weight="2" />
+
+            </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Hello World!"
-                android:id="@+id/tempTextBox" />
+                android:id="@+id/episode_info_text" />
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/episode_actors_recyclerview" />
+                </LinearLayout>
+            </HorizontalScrollView>
 
         </LinearLayout>
-
     </android.support.v4.widget.NestedScrollView>
+
 
 
     <!--<android.support.design.widget.FloatingActionButton-->

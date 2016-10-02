@@ -49,7 +49,13 @@ public class ActivitySeason extends AppCompatActivity {
 
     public String getShowId() {return showId;}
 
-    public int getSeason() {return seasonNumber;}
+    public int getSeasonNumber() {
+        return seasonNumber;
+    }
+
+    public Season getSeason() {
+        return season;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

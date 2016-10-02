@@ -71,7 +71,7 @@ public class FragmentEpisode extends Fragment {
         // ================ Get the parents instance of trakt ===========
         // Get the ID of the show that we're loading form the parent activity
         showId = ((ActivitySeason) this.getActivity()).getShowId();
-        seasonNumber = ((ActivitySeason) this.getActivity()).getSeason();
+        seasonNumber = ((ActivitySeason) this.getActivity()).getSeasonNumber();
 
         // =============== Fetch the series info from trakt ========================
         new RetrieveEpisodes().execute();
