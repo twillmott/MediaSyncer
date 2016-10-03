@@ -7,7 +7,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import uk.org.willmott.mediasyncer.tvdb.model.AuthRequest;
 import uk.org.willmott.mediasyncer.tvdb.model.Episode;
-import uk.org.willmott.mediasyncer.tvdb.model.SeasonActor;
+import uk.org.willmott.mediasyncer.tvdb.model.ShowActors;
 import uk.org.willmott.mediasyncer.tvdb.model.Token;
 
 /**
@@ -23,5 +23,5 @@ public interface TheTvdbApiEndpoints {
     Call<Token> getToken(@Body AuthRequest authRequest);
 
     @GET("series/{id}/actors")
-    Call<SeasonActor> getSeasonActors(@Path("id") String id);
+    Call<ShowActors> getShowActors(@Path("id") String id);
 }

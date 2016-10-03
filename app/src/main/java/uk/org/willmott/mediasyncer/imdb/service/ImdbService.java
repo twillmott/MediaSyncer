@@ -1,5 +1,7 @@
 package uk.org.willmott.mediasyncer.imdb.service;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,6 +14,7 @@ import java.net.URL;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import uk.org.willmott.mediasyncer.imdb.model.photos.Data;
 
 /**
  * Created by tomwi on 02/10/2016.
@@ -34,6 +37,9 @@ public class ImdbService {
         imdbApiEndpoint = retrofit.create(ImdbApiEndpoint.class);
     }
 
+    /**
+     * This is way too slow. Don't use it.
+     */
     public String getActorImage(String name) {
 
         String actorImdbId = null;

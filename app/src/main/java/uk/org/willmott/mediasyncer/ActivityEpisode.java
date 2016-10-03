@@ -46,8 +46,8 @@ public class ActivityEpisode extends AppCompatActivity {
     // The corresponding adapter
     ActorAdapter actorAdapter;
 
-    TheTvdbService tvdbService = new TheTvdbService();
-    ImdbService imdbService = new ImdbService();
+    TheTvdbService tvdbService;
+    ImdbService imdbService;
 
     /**
      * The {@link ViewPager} that will host the section contents.

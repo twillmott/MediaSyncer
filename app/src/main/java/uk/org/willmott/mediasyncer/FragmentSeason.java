@@ -41,6 +41,9 @@ public class FragmentSeason extends Fragment {
     // The list that represents the list item.
     private List<Season> seasonsList = new ArrayList<>();
 
+    // The adapter that holds the list of seasons
+    SeasonAdapter adapter;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -74,7 +77,7 @@ public class FragmentSeason extends Fragment {
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_season);
         recyclerView.setNestedScrollingEnabled(false);
-        SeasonAdapter adapter = new SeasonAdapter(getContext(), seasonsList, showId, getTraktService());
+        adapter = new SeasonAdapter(getContext(), seasonsList, showId, getTraktService());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -110,7 +113,7 @@ public class FragmentSeason extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+            adapter.notifyDataSetChanged();
         }
     }
 }

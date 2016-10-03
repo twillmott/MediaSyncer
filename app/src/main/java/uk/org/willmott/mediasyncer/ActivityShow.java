@@ -23,7 +23,6 @@ public class ActivityShow extends AppCompatActivity {
     String showId;
     TraktService traktService;
     Show show;
-    BaseShow BaseShow;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -42,6 +41,10 @@ public class ActivityShow extends AppCompatActivity {
     public TraktService getTraktService() { return traktService; }
 
     public String getShowId() {return showId;}
+
+    public Show getShow() {
+        return show;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

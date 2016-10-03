@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "imageAdded",
         "lastUpdated"
 })
-public class SeasonActorData {
+public class ShowActorData {
 
     @JsonProperty("id")
     private Integer id;

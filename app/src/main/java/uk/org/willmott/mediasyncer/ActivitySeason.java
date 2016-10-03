@@ -8,12 +8,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.BaseShow;
+import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.entities.Season;
 import com.uwetrottmann.trakt5.enums.Extended;
 
@@ -22,28 +26,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.service.TraktService;
+import uk.org.willmott.mediasyncer.ui.EpisodeAdapter;
 
 public class ActivitySeason extends AppCompatActivity {
 
     String showId;
+
     int seasonNumber;
+
     TraktService traktService;
+
     BaseShow BaseShow;
+
     Season season;
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SeasonSectionsPagerAdapter mSeasonsSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    // The list that represents the list item.
+    private List<Episode> episodesList = new ArrayList<>();
+
+    // The corresponding adapter for the episode list
+    EpisodeAdapter adapter;
 
     public TraktService getTraktService() {return traktService;}
 
@@ -79,17 +80,6 @@ public class ActivitySeason extends AppCompatActivity {
         });
         // ================================================================
 
-        // ========================= Set up the tabs ======================
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSeasonsSectionsPagerAdapter = new SeasonSectionsPagerAdapter(getSupportFragmentManager());
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.season_container);
-        mViewPager.setAdapter(mSeasonsSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.season_tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-        // ================================================================
 
         // Download the show information. We have a .get() on the end so that we wait until
         // all the info is loaded before we load the screen.
@@ -98,6 +88,17 @@ public class ActivitySeason extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // =============== Fetch the series info from trakt ========================
+        new RetrieveEpisodes().execute();
+
+        // =================== Now set up the list view. ========================
+        // Create the recyclerView listing of all of our seasons.
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_episodes);
+        adapter = new EpisodeAdapter(this, episodesList, getTraktService(), showId, seasonNumber);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     /**
@@ -149,45 +150,29 @@ public class ActivitySeason extends AppCompatActivity {
     }
 
     /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
+     * An async task that will retrieve all the season information from trakt to
+     * display in the listview.
      */
-    public class SeasonSectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SeasonSectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+    private class RetrieveEpisodes extends AsyncTask<Void, Void, Void> {
 
         @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a FragmentPlaceholder (defined as a static inner class below).
-            // This is where we define all of the fragments in our activity.
-            switch (position) {
-                case 0:
-                    return FragmentSeasonOverview.newInstance(position);
-                case 1:
-                    return FragmentEpisode.newInstance(position);
-                default: // This will only display if something weird messes up
-                    return FragmentPlaceholder.newInstance(position + 1);
+        protected Void doInBackground(Void... voids) {
+
+            // Try filling the list of seasons up from a trakt call.
+            List<Episode> episodes = new ArrayList<>();
+            try {
+                episodes = getTraktService().getTrakt().seasons().season(showId, seasonNumber, Extended.FULLIMAGES).execute().body();
+            } catch (Exception e) {
+                Log.e("Trakt", e.getMessage());
             }
+
+            episodesList.addAll(episodes);
+            return null;
         }
 
         @Override
-        public int getCount() {
-            // Show 2 total pages.
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Overview";
-                case 1:
-                    return "Episodes";
-            }
-            return "Error - This should not be a tab";
+        protected void onPostExecute(Void aVoid) {
+            adapter.notifyDataSetChanged();
         }
     }
 }

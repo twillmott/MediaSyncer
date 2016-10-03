@@ -12,17 +12,17 @@ import java.util.List;
 @JsonPropertyOrder({
         "data"
 })
-public class SeasonActor {
+public class ShowActors {
 
     @JsonProperty("data")
-    private List<SeasonActorData
-            > data = new ArrayList<SeasonActorData>();
+    private List<ShowActorData
+            > data = new ArrayList<ShowActorData>();
 
     /**
      * @return The data
      */
     @JsonProperty("data")
-    public List<SeasonActorData> getData() {
+    public List<ShowActorData> getData() {
         return data;
     }
 
@@ -30,7 +30,7 @@ public class SeasonActor {
      * @param data The data
      */
     @JsonProperty("data")
-    public void setData(List<SeasonActorData> data) {
+    public void setData(List<ShowActorData> data) {
         this.data = data;
     }
 

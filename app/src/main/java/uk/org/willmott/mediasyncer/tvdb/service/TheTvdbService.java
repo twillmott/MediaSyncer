@@ -3,13 +3,7 @@ package uk.org.willmott.mediasyncer.tvdb.service;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.omertron.imdbapi.ImdbApi;
-import com.omertron.imdbapi.model.ImdbPerson;
-import com.omertron.imdbapi.search.SearchObject;
-import com.uwetrottmann.trakt5.entities.Season;
-
 import java.io.IOException;
-import java.util.List;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -17,10 +11,9 @@ import okhttp3.Request;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import uk.org.willmott.mediasyncer.model.Actor;
 import uk.org.willmott.mediasyncer.tvdb.model.AuthRequest;
 import uk.org.willmott.mediasyncer.tvdb.model.Episode;
-import uk.org.willmott.mediasyncer.tvdb.model.SeasonActor;
+import uk.org.willmott.mediasyncer.tvdb.model.ShowActors;
 import uk.org.willmott.mediasyncer.tvdb.model.Token;
 
 /**
@@ -98,9 +91,9 @@ public class TheTvdbService {
     }
 
 
-    public SeasonActor getSeasonActors(String id) {
+    public ShowActors getShowActors(String id) {
         try {
-            Response<SeasonActor> response = theTvdbApi.getSeasonActors(id).execute();
+            Response<ShowActors> response = theTvdbApi.getShowActors(id).execute();
             return response.body();
         } catch (Exception e) {
             Log.e(this.getClass().getSimpleName(), e.getMessage());
