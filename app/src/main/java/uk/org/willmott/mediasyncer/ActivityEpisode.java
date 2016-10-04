@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.org.willmott.mediasyncer.imdb.service.ImdbApiEndpoint;
 import uk.org.willmott.mediasyncer.imdb.service.ImdbService;
 import uk.org.willmott.mediasyncer.model.Actor;
 import uk.org.willmott.mediasyncer.service.TraktService;
@@ -103,7 +102,7 @@ public class ActivityEpisode extends AppCompatActivity {
             new RetrieveEpisodeInfo().execute().get();
 
             // Start off the tasks to populate all the non esential stuff
-            new PopulateActors().execute();
+//            new PopulateActors().execute();
 
         } catch (Exception e) {
             e.printStackTrace();

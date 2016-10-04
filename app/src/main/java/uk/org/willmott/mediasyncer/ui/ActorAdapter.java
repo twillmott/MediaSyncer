@@ -60,7 +60,7 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> 
         title.setText(actor.getName());
         ImageView imageView = holder.image;
         if (actor.getImageUrl() != null) {
-            Picasso.with(mContext).load(actor.getImageUrl()).centerCrop().resize(54, 80).into(imageView);
+            Picasso.with(mContext).load(actor.getImageUrl()).centerCrop().resize(200, 300).into(imageView);
         } else {
             // TODO Put an unknown person in.
         }
