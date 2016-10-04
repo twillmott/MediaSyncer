@@ -59,7 +59,9 @@ public class ActivityEpisode extends AppCompatActivity {
 
     public int getSeason() {return seasonNumber;}
 
-    public int getEpisode() {return episodeNumber;}
+    public int getEpisodeNumber() {
+        return episodeNumber;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,29 +86,21 @@ public class ActivityEpisode extends AppCompatActivity {
         });
         // ======================================================
 
-        TextView textView = (TextView) findViewById(R.id.episode_info_text);
-        textView.setText("Hello");
-
-        // =================== Set up the actor scroller ========================
-        // Set up the recycler view to dispaly the list of shows that we just loaded.
-        // Extra info will be loaded within the list view
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.episode_actors_recyclerview);
-        actorAdapter = new ActorAdapter(this, actorList);
-        recyclerView.setAdapter(actorAdapter);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         // Download the show information. We have a .get() on the end so that we wait until
         // all the info is loaded before we load the screen.
         try {
             // Get all the episode info that's required on page load
             new RetrieveEpisodeInfo().execute().get();
-
-            // Start off the tasks to populate all the non esential stuff
-//            new PopulateActors().execute();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Define the animation on the back button press.
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     /**
@@ -131,43 +125,18 @@ public class ActivityEpisode extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             Toolbar toolbar = (Toolbar) findViewById(R.id.episode_toolbar);
-            toolbar.setTitle("Episode " + episode.number.toString() + ": " + episode.title);
+            toolbar.setTitle("Episode " + episode.number.toString());
+            toolbar.setSubtitle(episode.title);
             ImageView imageView = (ImageView) findViewById(R.id.episode_banner);
             // Set the banner container to be 16:9
             Double max_height = imageView.getWidth() * 0.5625;
             imageView.setMaxHeight(max_height.intValue());
             String url = episode.images.screenshot.full;
             Picasso.with(ActivityEpisode.this).load(url).into(imageView);
-        }
-    }
 
-    // Define the animation on the back button press.
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-    }
-
-    private class PopulateActors extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            uk.org.willmott.mediasyncer.tvdb.model.Episode tvdbEpisode = tvdbService.getEpisode(episode.ids.tvdb.toString());
-
-            if (actorList.size() > 0) {
-                actorList.clear();
-            }
-
-            for (String actor : tvdbEpisode.getData().getGuestStars()) {
-                actorList.add(new Actor(imdbService.getActorImage(actor), actor));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            actorAdapter.notifyDataSetChanged();
+            // Episode information
+            TextView textView = (TextView) findViewById(R.id.episode_info_text);
+            textView.setText(episode.overview);
         }
     }
 }
