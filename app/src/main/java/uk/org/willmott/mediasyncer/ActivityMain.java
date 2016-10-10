@@ -16,6 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.design.widget.FloatingActionButton;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+
+import java.sql.SQLException;
+
+import uk.org.willmott.mediasyncer.data.TvDbHelper;
+import uk.org.willmott.mediasyncer.data.dao.Series;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -30,6 +37,9 @@ public class ActivityMain extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private MainSectionsPagerAdapter mMainSectionsPagerAdapter;
+
+    TvDbHelper helper = new TvDbHelper(this);
+    Dao<Series, Integer> seriesDao = null;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -87,12 +97,51 @@ public class ActivityMain extends AppCompatActivity {
 
 //        Uncomment me to go straight to family guy
 //        // REMOVE ME, JUST FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // Go straight to the family guy show to speed things up.
-        Intent intent = new Intent(this, ActivityShow.class);
-        // Get the ID of the show we've clicked on
-        intent.putExtra("id", "1425");
-        startActivity(intent);
+//        // Go straight to the family guy show to speed things up.
+//        Intent intent = new Intent(this, ActivityShow.class);
+//        // Get the ID of the show we've clicked on
+//        intent.putExtra("id", "1425");
+//        startActivity(intent);
 //        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        seriesDao = helper.getSeriesDao();
+
+        Series series = new Series("Toms test", "kj", 12, "Thumb", "Banner", 3, 13);
+
+        try {
+            seriesDao.create(series);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Series loadedSeries = null;
+        try {
+            loadedSeries = seriesDao.queryBuilder().queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        loadedSeries.setTitle("Updddddate");
+
+        try {
+            seriesDao.update(loadedSeries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            loadedSeries = seriesDao.queryBuilder().queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            seriesDao.delete(loadedSeries);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /**

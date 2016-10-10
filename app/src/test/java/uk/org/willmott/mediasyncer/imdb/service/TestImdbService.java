@@ -1,9 +1,5 @@
 package uk.org.willmott.mediasyncer.imdb.service;
 
-import com.omertron.imdbapi.ImdbApi;
-import com.omertron.imdbapi.model.ImdbPerson;
-import com.omertron.imdbapi.search.SearchObject;
-
 import static org.junit.Assert.*;
 
 import org.junit.Test;
