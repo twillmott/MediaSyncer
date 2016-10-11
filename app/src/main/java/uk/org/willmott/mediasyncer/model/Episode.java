@@ -8,16 +8,24 @@ import org.parceler.Parcel;
 @Parcel
 public class Episode {
 
+    private Integer id;
     private int episodeNumber;
+    private String title;
     private String bannerUrl;
     private String thumbnailUrl;
     private String overview;
 
-    public Episode(int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
+    public Episode(Integer id, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
+        this.id = id;
         this.episodeNumber = episodeNumber;
         this.bannerUrl = bannerUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.overview = overview;
+        this.title = title;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public int getEpisodeNumber() {
@@ -50,5 +58,13 @@ public class Episode {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

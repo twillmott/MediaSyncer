@@ -11,7 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Series {
 
     @DatabaseField(generatedId = true)
-    private long id;
+    private int id;
     @DatabaseField(index = true, canBeNull = false)
     private String title;
     @DatabaseField(canBeNull = false)
@@ -23,29 +23,28 @@ public class Series {
     @DatabaseField
     private String seriesBanner;
     @DatabaseField
-    // Null indicates no next episode.
-    private Integer nextEpisodeSeasonNumber;
+    private Episode nextEpisode;
     @DatabaseField
-    private Integer nextEpisodeEpisodeNumber;
+    private String overview;
 
-    Series() {
+    public Series() {
     } // No args constructor for ormlite
 
-    public Series(String title, String traktId, Integer tvdbId, String seriesThumbnail, String seriesBanner, Integer nextEpisodeSeasonNumber, Integer nextEpisodeEpisodeNumber) {
+    public Series(String title, String traktId, Integer tvdbId, String seriesThumbnail, String seriesBanner, Episode nextEpisode, String overview) {
         this.title = title;
         this.traktId = traktId;
         this.tvdbId = tvdbId;
         this.seriesThumbnail = seriesThumbnail;
         this.seriesBanner = seriesBanner;
-        this.nextEpisodeSeasonNumber = nextEpisodeSeasonNumber;
-        this.nextEpisodeEpisodeNumber = nextEpisodeEpisodeNumber;
+        this.nextEpisode = nextEpisode;
+        this.overview = overview;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -89,19 +88,19 @@ public class Series {
         this.seriesBanner = seriesBanner;
     }
 
-    public Integer getNextEpisodeSeasonNumber() {
-        return nextEpisodeSeasonNumber;
+    public Episode getNextEpisode() {
+        return nextEpisode;
     }
 
-    public void setNextEpisodeSeasonNumber(Integer nextEpisodeSeasonNumber) {
-        this.nextEpisodeSeasonNumber = nextEpisodeSeasonNumber;
+    public void setNextEpisode(Episode nextEpisode) {
+        this.nextEpisode = nextEpisode;
     }
 
-    public Integer getNextEpisodeEpisodeNumber() {
-        return nextEpisodeEpisodeNumber;
+    public String getOverview() {
+        return overview;
     }
 
-    public void setNextEpisodeEpisodeNumber(Integer nextEpisodeEpisodeNumber) {
-        this.nextEpisodeEpisodeNumber = nextEpisodeEpisodeNumber;
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 }

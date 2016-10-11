@@ -12,6 +12,7 @@ import java.util.List;
 @Parcel
 public class Series {
 
+    private int id;
     private String title;
     private String traktId;
     private int tvdbId;
@@ -19,8 +20,10 @@ public class Series {
     private String thumbnailUrl;
     private Episode nextEpisode;
     private List<Season> seasons;
+    private String overview;
 
-    public Series(String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons) {
+    public Series(int id, String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
+        this.id = id;
         this.title = title;
         this.traktId = traktId;
         this.tvdbId = tvdbId;
@@ -28,6 +31,11 @@ public class Series {
         this.thumbnailUrl = thumbnailUrl;
         this.nextEpisode = nextEpisode;
         this.seasons = seasons;
+        this.overview = overview;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -84,5 +92,13 @@ public class Series {
 
     public void setSeasons(List<Season> seasons) {
         this.seasons = seasons;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 }

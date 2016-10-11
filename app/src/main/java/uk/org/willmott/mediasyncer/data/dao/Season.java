@@ -10,12 +10,12 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Season {
 
-    // Foreign key to the series table. Cannot be null.
     @DatabaseField(generatedId = true)
-    private int seriesId;
+    private int id;
     @DatabaseField(canBeNull = false)
     private int seasonNumber;
-    @DatabaseField(foreign = true)
+    // Foreign key to the series table. Cannot be null.
+    @DatabaseField(foreign = true, canBeNull = false)
     private Series series;
     @DatabaseField
     private String thumbnail;
@@ -23,7 +23,7 @@ public class Season {
     private String banner;
 
 
-    Season() {
+    public Season() {
     } // No args constructor for ormlite.
 
     public Season(int seasonNumber, Series series, String thumbnail, String banner) {
@@ -41,12 +41,12 @@ public class Season {
         this.seasonNumber = seasonNumber;
     }
 
-    public int getSeriesId() {
-        return seriesId;
+    public int getId() {
+        return id;
     }
 
-    public void setSeriesId(int seriesId) {
-        this.seriesId = seriesId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Series getSeries() {

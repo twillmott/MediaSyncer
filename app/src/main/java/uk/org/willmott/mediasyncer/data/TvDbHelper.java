@@ -12,6 +12,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.data.dao.Episode;
 import uk.org.willmott.mediasyncer.data.dao.Season;
 import uk.org.willmott.mediasyncer.data.dao.Series;
 
@@ -30,6 +31,7 @@ public class TvDbHelper extends OrmLiteSqliteOpenHelper {
 
     private Dao<Series, Integer> seriesDao = null;
     private Dao<Season, Integer> seasonDao = null;
+    private Dao<Episode, Integer> episodeDao = null;
 
     public TvDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -43,6 +45,8 @@ public class TvDbHelper extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable(connectionSource, Series.class);
+            TableUtils.createTable(connectionSource, Season.class);
+            TableUtils.createTable(connectionSource, Episode.class);
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error creating new tables", e);
         }
@@ -53,6 +57,8 @@ public class TvDbHelper extends OrmLiteSqliteOpenHelper {
                           int newVersion) {
         try {
             TableUtils.dropTable(connectionSource, Series.class, true);
+            TableUtils.dropTable(connectionSource, Season.class, true);
+            TableUtils.dropTable(connectionSource, Episode.class, true);
             onCreate(sqLiteDatabase, connectionSource);
         } catch (SQLException e) {
             Log.e(LOG_TAG, "Error upgrading database tables.", e);
@@ -80,5 +86,16 @@ public class TvDbHelper extends OrmLiteSqliteOpenHelper {
             }
         }
         return seasonDao;
+    }
+
+    public Dao<Episode, Integer> getEpisodeDao() {
+        if (seasonDao == null) {
+            try {
+                episodeDao = getDao(Episode.class);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error creating dao " + e);
+            }
+        }
+        return episodeDao;
     }
 }
