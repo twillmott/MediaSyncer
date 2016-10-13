@@ -6,6 +6,7 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
@@ -39,7 +40,15 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
      */
     protected List<uk.org.willmott.mediasyncer.model.Season> getSeasonsForSeries(Series series) {
         try {
-            return getModelForDao(seasonDao.queryBuilder().where().eq(Season.SERIES_COLUMN, series.getId()).query());
+            List<uk.org.willmott.mediasyncer.model.Season> seasons = new ArrayList<>();
+
+            for (Season season : seasonDao.queryBuilder().where().eq(Season.SERIES_COLUMN, series.getId()).query()) {
+                seasons.add(getModelForDao(season));
+            }
+            return seasons;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+            return null;
         }
     }
 

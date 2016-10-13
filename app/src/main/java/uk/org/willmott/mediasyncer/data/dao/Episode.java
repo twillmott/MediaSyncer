@@ -9,9 +9,11 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Episode {
 
+    public static final String SEASON_COLUMN = "seasonId";
+
     @DatabaseField(generatedId = true)
     private int id;
-    @DatabaseField(foreign = true, canBeNull = false)
+    @DatabaseField(foreign = true, canBeNull = false, columnName = SEASON_COLUMN)
     private Season season;
     @DatabaseField(canBeNull = false)
     private int episodeNumber;

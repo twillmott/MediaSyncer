@@ -1,9 +1,11 @@
 package uk.org.willmott.mediasyncer.data.access;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
@@ -31,7 +33,17 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
 
 
     protected List<uk.org.willmott.mediasyncer.model.Episode> getEpisodesForSeason(Season season) {
-        return null;
+        try {
+            List<uk.org.willmott.mediasyncer.model.Episode> episodes = new ArrayList<>();
+
+            for (Episode episode : episodeDao.queryBuilder().where().eq(Episode.SEASON_COLUMN, season.getId()).query()) {
+                episodes.add(getModelForDao(episode));
+            }
+            return episodes;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+            return null;
+        }
     }
 
 

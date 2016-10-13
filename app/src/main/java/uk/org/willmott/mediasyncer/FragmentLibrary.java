@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.model.ContentType;
+import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.LibraryAdapter;
 
@@ -62,6 +63,7 @@ public class FragmentLibrary extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
 
     public FragmentLibrary() {
     }
@@ -119,7 +121,8 @@ public class FragmentLibrary extends Fragment {
             // Start the progress spinner spinning.
             refresh.setActionView(R.layout.actionbar_indeterminate_progress);
             // Refresh the data list.
-            new RetrieveLibraryInfo().execute();
+            getTraktService().getAllShows();
+//            new RetrieveLibraryInfo().execute();
             return true;
         }
         return super.onOptionsItemSelected(item);

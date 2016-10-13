@@ -10,6 +10,7 @@ import android.util.Log;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
+import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.entities.Show;
 import com.uwetrottmann.trakt5.entities.Username;
 import com.uwetrottmann.trakt5.enums.Extended;
@@ -23,9 +24,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Response;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.model.Season;
+import uk.org.willmott.mediasyncer.model.Series;
 
 /**
  * This is my version of an service for interfacing with Trakt. It is very heavily dependent on
@@ -295,6 +299,78 @@ public class TraktService {
     }
 
 
+    private Series baseShowToSeries(BaseShow baseShow, List<Season> seasons) {
+
+        String thumb = null;
+        if (baseShow.show.images.thumb != null) {
+            thumb = baseShow.show.images.poster.medium;
+        }
+        String banner = null;
+        if (baseShow.show.images.poster != null) {
+            banner = baseShow.show.images.thumb.full;
+        }
+
+        return new Series(
+                0,
+                baseShow.show.title,
+                baseShow.show.ids.trakt.toString(),
+                baseShow.show.ids.tvdb,
+                banner,
+                thumb,
+                episodeMapper(baseShow.next_episode),
+                seasons,
+                baseShow.show.overview);
+    }
+
+
+    private Season seasonMapper(com.uwetrottmann.trakt5.entities.Season season, List<uk.org.willmott.mediasyncer.model.Episode> episodes) {
+
+        String thumb = null;
+        if (season.images.poster != null) {
+            thumb = season.images.poster.medium;
+        }
+        String banner = null;
+        if (season.images.thumb != null) {
+            banner = season.images.thumb.full;
+        }
+
+        return new Season(
+                0,
+                season.number,
+                banner,
+                thumb,
+                episodes);
+    }
+
+
+    private uk.org.willmott.mediasyncer.model.Episode episodeMapper(Episode episode) {
+
+        String thumb = null;
+        String banner = null;
+        if (episode.images.screenshot != null) {
+            thumb = episode.images.screenshot.medium;
+            banner = episode.images.screenshot.full;
+        }
+
+        return new uk.org.willmott.mediasyncer.model.Episode(
+                0,
+                episode.title,
+                episode.number,
+                banner,
+                thumb,
+                episode.overview);
+    }
+
+    public List<Series> getAllShows() {
+        try {
+            return new PopulateFullSeriesTree().execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private class RefreshTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
 
@@ -313,6 +389,64 @@ public class TraktService {
                 e.printStackTrace();
             }
             return null;
+        }
+    }
+
+
+    public class PopulateFullSeriesTree extends AsyncTask<Void, Void, List<Series>> {
+
+        @Override
+        protected List<Series> doInBackground(Void... params) {
+
+            // Get all of the users shows, with the minimum information.
+            // Get the users watchlist
+            List<BaseShow> watchlistShows = getShowWatchlist();
+            // Get the users watched shows.
+            List<BaseShow> watchedShows = getShowWatched();
+            // Get the users collection.
+            List<BaseShow> collectedShows = getShowCollection();
+
+            // Merge all the shows in to one list.
+            List<BaseShow> mergedShows = mergeShows(true, watchlistShows, watchedShows, collectedShows);
+
+            List<Series> showModels = new ArrayList<>();
+
+            List<Series> shows = new ArrayList<>();
+            for (BaseShow traktShow : mergedShows) {
+
+                // Get the extra details of the show. Trakt doesn't give all details in the one api call.
+                BaseShow fullShow = combineBaseShows(traktShow, getShowWatchedProgress(traktShow.show.ids.trakt.toString()));
+
+                // Get all of the seasons for the show
+                List<com.uwetrottmann.trakt5.entities.Season> traketSeasons = new ArrayList<>();
+                try {
+                    traketSeasons = getTrakt().seasons().summary(traktShow.show.ids.trakt.toString(), Extended.FULLIMAGES).execute().body();
+                } catch (Exception e) {
+                    Log.e("Trakt", e.getMessage());
+                }
+
+                List<Season> seasonModels = new ArrayList<>();
+                // Go through each season and get its episodes
+                for (com.uwetrottmann.trakt5.entities.Season traktSeason : traketSeasons) {
+                    List<Episode> traktEpisodes = new ArrayList<>();
+                    try {
+                        traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.FULLIMAGES).execute().body();
+                    } catch (Exception e) {
+                        Log.e("Trakt", e.getMessage());
+                    }
+
+                    List<uk.org.willmott.mediasyncer.model.Episode> episodeModels = new ArrayList<>();
+                    for (Episode traktEpisode : traktEpisodes) {
+                        episodeModels.add(episodeMapper(traktEpisode));
+                    }
+
+                    seasonModels.add(seasonMapper(traktSeason, episodeModels));
+                }
+
+                showModels.add(baseShowToSeries(fullShow, seasonModels));
+            }
+
+            return showModels;
         }
     }
 }

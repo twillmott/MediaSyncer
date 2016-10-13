@@ -103,45 +103,6 @@ public class ActivityMain extends AppCompatActivity {
 //        intent.putExtra("id", "1425");
 //        startActivity(intent);
 //        //""!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        seriesDao = helper.getSeriesDao();
-
-        Series series = new Series("Toms test", "kj", 12, "Thumb", "Banner", 3, 13);
-
-        try {
-            seriesDao.create(series);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        Series loadedSeries = null;
-        try {
-            loadedSeries = seriesDao.queryBuilder().queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        loadedSeries.setTitle("Updddddate");
-
-        try {
-            seriesDao.update(loadedSeries);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            loadedSeries = seriesDao.queryBuilder().queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            seriesDao.delete(loadedSeries);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
     /**
