@@ -6,6 +6,8 @@ import android.util.Log;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
 import uk.org.willmott.mediasyncer.data.dao.Series;
@@ -33,6 +35,24 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
     protected Series getSeriesForId(int id) {
         try {
             return seriesDao.queryForId(id);
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * Get all series's data from the database including seasons and episodes. Note that this may not
+     * be complete (with the trakt api).
+     */
+    protected List<uk.org.willmott.mediasyncer.model.Series> getAllSeriesAsModel() {
+        try {
+            List<uk.org.willmott.mediasyncer.model.Series> seriesModelList = new ArrayList<>();
+            for (Series series : seriesDao.queryForAll()) {
+                seriesModelList.add(getModelForDao(series));
+            }
+            return seriesModelList;
         } catch (SQLException e) {
             Log.e(LOG_TAG, e.getMessage());
             return null;

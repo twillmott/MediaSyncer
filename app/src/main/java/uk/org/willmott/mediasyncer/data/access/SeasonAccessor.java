@@ -22,6 +22,8 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
 
     Context context;
 
+
+
     public SeasonAccessor(Context context) {
         this.context = context;
     }
@@ -32,8 +34,13 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
     EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
     SeriesAccessor seriesAccessor = new SeriesAccessor(context);
 
+    /**
+     * Get all the fully populated season (including episodes) for a given series.
+     */
     protected List<uk.org.willmott.mediasyncer.model.Season> getSeasonsForSeries(Series series) {
-        return null;
+        try {
+            return getModelForDao(seasonDao.queryBuilder().where().eq(Season.SERIES_COLUMN, series.getId()).query());
+        }
     }
 
     protected Season getSeasonById(int id) {

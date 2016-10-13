@@ -10,12 +10,14 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Season {
 
+    public static final String SERIES_COLUMN = "seriesId";
+
     @DatabaseField(generatedId = true)
     private int id;
     @DatabaseField(canBeNull = false)
     private int seasonNumber;
     // Foreign key to the series table. Cannot be null.
-    @DatabaseField(foreign = true, canBeNull = false)
+    @DatabaseField(foreign = true, canBeNull = false, columnName = SERIES_COLUMN)
     private Series series;
     @DatabaseField
     private String thumbnail;
