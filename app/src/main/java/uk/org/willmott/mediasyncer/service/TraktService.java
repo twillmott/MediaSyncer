@@ -65,7 +65,7 @@ public class TraktService {
      */
     public TraktService(String accessToken) { trakt.accessToken(accessToken); }
 
-    public TraktV2 getTrakt() {
+    private TraktV2 getTrakt() {
         return trakt;
     }
 
@@ -77,7 +77,7 @@ public class TraktService {
      * service.
      * @param context If the context is passed in, it means we're looking to create a new authorization.
      */
-    public void checkAuthentication(Context context, String code) {
+    private void checkAuthentication(Context context, String code) {
         try {
 
             SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -226,7 +226,7 @@ public class TraktService {
         private String code;
         private TraktV2 traktV2;
 
-        public RetrieveTraktToken(String code, TraktV2 traktV2) {
+        private RetrieveTraktToken(String code, TraktV2 traktV2) {
             this.code = code;
             this.traktV2 = traktV2;
         }
@@ -269,7 +269,7 @@ public class TraktService {
      * Combine two base shows, if any of show A's properties are null, we will use
      * show B's property.
      */
-    public BaseShow combineBaseShows(BaseShow showA, BaseShow showB) {
+    private BaseShow combineBaseShows(BaseShow showA, BaseShow showB) {
         BaseShow show = new BaseShow();
 
         show.next_episode = showA.next_episode == null ? showB.next_episode : showA.next_episode;
@@ -369,15 +369,12 @@ public class TraktService {
                 episode.overview);
     }
 
-    public List<Series> getAllShows(Context context) {
+    public void getAllShows(Context context) {
         try {
-            return new RefreshFullTvDatabase().execute(context).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            new RefreshFullTvDatabase().execute(context);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error loading all shows from trakt" + e.getMessage());
         }
-        return null;
     }
 
     private class RefreshTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
@@ -401,10 +398,10 @@ public class TraktService {
     }
 
 
-    public class RefreshFullTvDatabase extends AsyncTask<Context, Void, List<Series>> {
+    private class RefreshFullTvDatabase extends AsyncTask<Context, Void, Void> {
 
         @Override
-        protected List<Series> doInBackground(Context... params) {
+        protected Void doInBackground(Context... params) {
 
             // Get all of the users shows, with the minimum information.
             // Get the users watchlist
@@ -455,7 +452,7 @@ public class TraktService {
             }
             SeriesAccessor accessor = new SeriesAccessor(params[0]);
             accessor.writeAllSeriesToDatabase(showModels);
-            return showModels;
+            return null;
         }
     }
 }

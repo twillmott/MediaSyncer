@@ -83,6 +83,7 @@ public class FragmentLibrary extends Fragment {
         // =================== Now set up the list view. ========================
         // Set up the recycler view to dispaly the list of shows that we just loaded.
         // Extra info will be loaded within the list view
+        showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_library);
         libraryAdapter = new LibraryAdapter(getContext(), showsList, getTraktService());
         recyclerView.setAdapter(libraryAdapter);
@@ -122,63 +123,11 @@ public class FragmentLibrary extends Fragment {
             // Start the progress spinner spinning.
             refresh.setActionView(R.layout.actionbar_indeterminate_progress);
             // Refresh the data list.
-            showsList.clear();
-            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
-            libraryAdapter.notifyDataSetChanged();
-
+            getTraktService().getAllShows(getContext());
             // Stop the refresh button spinner.
             refresh.setActionView(null);
-//            getTraktService().getAllShows(getContext());
-//            new RetrieveLibraryInfo().execute();
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Retrieve all of the users library info. This will have to be extended to include movies when
-     * we add that functionality.
-     */
-    private class RetrieveLibraryInfo extends AsyncTask<Void, Void, List<BaseShow>> {
-
-        @Override
-        protected List<BaseShow> doInBackground(Void... params) {
-
-            TraktService traktService = getTraktService();
-
-            // Get all of the users shows, with the minimum information.
-            // Get the users watchlist
-            List<BaseShow> watchlistShows = traktService.getShowWatchlist();
-            // Get the users watched shows.
-            List<BaseShow> watchedShows = traktService.getShowWatched();
-            // Get the users collection.
-            List<BaseShow> collectedShows = traktService.getShowCollection();
-
-            showsList.clear();
-            // Merge all the shows in to one list.
-            List<BaseShow> shows = traktService.mergeShows(true, watchlistShows, watchedShows, collectedShows);
-
-            for (BaseShow show : shows) {
-                BaseShow showProgress = traktService.getShowWatchedProgress(show.show.ids.trakt.toString());
-
-                // Combine the base show and the show and add to the listing
-//                showsList.add(traktService.combineBaseShows(show, showProgress));
-            }
-
-            return shows;
-        }
-
-        @Override
-        protected void onPostExecute(List<BaseShow> shows) {
-            super.onPostExecute(shows);
-            libraryAdapter.notifyDataSetChanged();
-            // Stop the refresh button spinner.
-            refresh.setActionView(null);
-
-            // If we returned no shows, say so
-            if (shows.size() == 0) {
-                Toast.makeText((ActivityMain) FragmentLibrary.this.getActivity(), "Unable to find any shows, check authorisation.", Toast.LENGTH_LONG).show();
-            }
-        }
     }
 }
