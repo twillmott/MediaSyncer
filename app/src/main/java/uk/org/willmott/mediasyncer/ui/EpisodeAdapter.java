@@ -11,13 +11,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.uwetrottmann.trakt5.entities.Episode;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.ActivityEpisode;
 import uk.org.willmott.mediasyncer.ActivitySeason;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.model.Episode;
+import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
@@ -31,14 +34,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
     private Context mContext;
     private TraktService traktService;
     private String showId;
-    private int seasonNumber;
+    private Season season;
 
-    public EpisodeAdapter(Context context, List<Episode> episodes, TraktService traktService, String showId, int seasonNumber) {
+    public EpisodeAdapter(Context context, List<Episode> episodes, TraktService traktService, String showId, Season season) {
         mEpisodes = episodes;
         mContext = context;
         this.traktService = traktService;
         this.showId = showId;
-        this.seasonNumber = seasonNumber;
+        this.season = season;
     }
 
     // Easy access to the context object in the recyclerview
@@ -68,16 +71,15 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
         // Set up all the item views
         TextView title = holder.title;
-        title.setText("Episode ".concat(episode.number.toString()));
-        TextView info = holder.info;
-        String episodeInfoString = "First aired: " + episode.first_aired.getDayOfMonth() + "/" +
-                episode.first_aired.getMonthOfYear() + "/" + episode.first_aired.getYear();
-        info.setText(episodeInfoString);
-        ImageView imageView = holder.image;
+        title.setText("Episode ".concat(Integer.toString(episode.getEpisodeNumber())));
 
-        if (episode.images.screenshot.thumb != null) {
-            Picasso.with(mContext).load(episode.images.screenshot.thumb).centerCrop().resize(54,80).into(imageView);
-        }
+        TextView info = holder.info;
+//        String episodeInfoString = "First aired: " + episode.first_aired.getDayOfMonth() + "/" +
+//                episode.first_aired.getMonthOfYear() + "/" + episode.first_aired.getYear();
+        info.setText("TODO Implement the first aired string..");
+
+        ImageView imageView = holder.image;
+        Picasso.with(mContext).load(episode.getThumbnailUrl()).centerCrop().resize(54, 80).into(imageView);
     }
 
     @Override
@@ -110,12 +112,10 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ActivityEpisode.class);
-                    // Get the ID of the show we've clicked on
-                    int episodeNumber = EpisodeAdapter.this.mEpisodes.get(getAdapterPosition()).number;
-                    // Put the id in to the intent
+
                     intent.putExtra("id", showId);
-                    intent.putExtra("season", seasonNumber);
-                    intent.putExtra("episode", episodeNumber);
+                    intent.putExtra("season", Parcels.wrap(season));
+                    intent.putExtra("episode", Parcels.wrap(EpisodeAdapter.this.mEpisodes.get(getAdapterPosition())));
                     intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);

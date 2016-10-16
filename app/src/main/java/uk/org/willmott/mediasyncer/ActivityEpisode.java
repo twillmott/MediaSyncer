@@ -14,12 +14,15 @@ import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.enums.Extended;
 
+import org.parceler.Parcels;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.imdb.service.ImdbService;
 import uk.org.willmott.mediasyncer.model.Actor;
+import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.tvdb.service.TheTvdbService;
 import uk.org.willmott.mediasyncer.ui.ActorAdapter;
@@ -70,8 +73,8 @@ public class ActivityEpisode extends AppCompatActivity {
 
         // Get the ID of the show we're displaying
         showId = getIntent().getStringExtra("id");
-        seasonNumber = getIntent().getIntExtra("season", 0);
-        episodeNumber = getIntent().getIntExtra("episode", 0);
+        seasonNumber = ((Season) Parcels.unwrap(getIntent().getParcelableExtra("season"))).getSeasonNumber();
+        episodeNumber = ((uk.org.willmott.mediasyncer.model.Episode) Parcels.unwrap(getIntent().getParcelableExtra("episode"))).getEpisodeNumber();
         traktService = new TraktService(getIntent().getStringExtra("accessToken"));
 
         // ============= Set up the toolbar =====================
