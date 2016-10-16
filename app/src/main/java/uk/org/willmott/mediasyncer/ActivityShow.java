@@ -1,6 +1,5 @@
 package uk.org.willmott.mediasyncer;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,12 +12,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.uwetrottmann.trakt5.entities.BaseShow;
-import com.uwetrottmann.trakt5.entities.Show;
 
 import org.parceler.Parcels;
 
-import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
@@ -47,10 +43,6 @@ public class ActivityShow extends AppCompatActivity {
         return series;
     }
 
-    public String getShowId() {
-        return series.getTraktId();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +50,7 @@ public class ActivityShow extends AppCompatActivity {
 
         // Get the ID of the show we're displaying
         traktService = new TraktService(getIntent().getStringExtra("accessToken"));
-        series = (Series) Parcels.unwrap(getIntent().getParcelableExtra("show"));
+        series = Parcels.unwrap(getIntent().getParcelableExtra("show"));
 
         // ================== Set up the toolbar ==========================
         Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
@@ -118,7 +110,7 @@ public class ActivityShow extends AppCompatActivity {
      */
     public class ShowSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public ShowSectionsPagerAdapter(FragmentManager fm) {
+        ShowSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

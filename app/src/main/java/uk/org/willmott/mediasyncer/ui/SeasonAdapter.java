@@ -12,16 +12,14 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcel;
 import org.parceler.Parcels;
 
 import java.util.List;
 
-import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.ActivitySeason;
 import uk.org.willmott.mediasyncer.ActivityShow;
+import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.model.Season;
-import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
  * The adapter used to display the season list items (in a RecycleView). It uses picasso to load the
@@ -32,14 +30,10 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
 
     private List<Season> mSeasons;
     private Context mContext;
-    private String showId;
-    private TraktService traktService;
 
-    public SeasonAdapter(Context context, List<Season> seasons, String showId, TraktService traktService) {
+    public SeasonAdapter(Context context, List<Season> seasons) {
         mSeasons = seasons;
         mContext = context;
-        this.showId = showId;
-        this.traktService = traktService;
     }
 
     // Easy access to the context object in the recyclerview
@@ -85,7 +79,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView title;
@@ -94,7 +88,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
@@ -110,9 +104,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
 
                     Intent intent = new Intent(view.getContext(), ActivitySeason.class);
                     // Put the id in to the intent
-                    intent.putExtra("id", showId);
                     intent.putExtra("season", Parcels.wrap(SeasonAdapter.this.mSeasons.get(getAdapterPosition())));
-                    intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);
                     ((ActivityShow)view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);

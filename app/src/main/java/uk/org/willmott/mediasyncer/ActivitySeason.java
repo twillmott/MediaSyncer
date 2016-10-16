@@ -17,26 +17,17 @@ import java.util.List;
 
 import uk.org.willmott.mediasyncer.model.Episode;
 import uk.org.willmott.mediasyncer.model.Season;
-import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.EpisodeAdapter;
 
 public class ActivitySeason extends AppCompatActivity {
 
-    String showId;
-
     Season season;
-
-    TraktService traktService;
 
     // The list that represents the list item.
     private List<Episode> episodesList = new ArrayList<>();
 
     // The corresponding adapter for the episode list
     EpisodeAdapter adapter;
-
-    public TraktService getTraktService() {return traktService;}
-
-    public String getShowId() {return showId;}
 
     public Season getSeason() {
         return season;
@@ -47,11 +38,7 @@ public class ActivitySeason extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_season);
 
-        // Get the ID of the show we're displaying
-        showId = getIntent().getStringExtra("id");
-        season = (Season) Parcels.unwrap(getIntent().getParcelableExtra("season"));
-        traktService = new TraktService(getIntent().getStringExtra("accessToken"));
-
+        season = Parcels.unwrap(getIntent().getParcelableExtra("season"));
         episodesList.addAll(season.getEpisodes());
 
         // =================== Set up the toolbar =========================
@@ -76,7 +63,7 @@ public class ActivitySeason extends AppCompatActivity {
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_episodes);
-        adapter = new EpisodeAdapter(this, episodesList, getTraktService(), showId, season);
+        adapter = new EpisodeAdapter(this, episodesList);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

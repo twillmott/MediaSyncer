@@ -66,11 +66,7 @@ public class FragmentSeason extends Fragment {
         // Create the recyclerView listing of all of our seasons.
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_season);
         recyclerView.setNestedScrollingEnabled(false);
-        adapter = new SeasonAdapter(
-                getContext(),
-                seasonsList,
-                ((ActivityShow) this.getActivity()).getSeries().getTraktId(),
-                getTraktService());
+        adapter = new SeasonAdapter(getContext(), seasonsList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
