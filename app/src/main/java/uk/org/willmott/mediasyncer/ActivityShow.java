@@ -1,5 +1,6 @@
 package uk.org.willmott.mediasyncer;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
+
+import java.util.concurrent.ExecutionException;
 
 import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
@@ -63,14 +66,14 @@ public class ActivityShow extends AppCompatActivity {
             }
         });
         // ================================================================
-        // ================== Set up the activity vies=====================
+        // ================== Set up the activity views=====================
         toolbar.setTitle(series.getTitle());
 
-        ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
-        // Set the banner container to be 16:9
-        Double max_height = imageView.getWidth() * 0.5625;
-        imageView.setMaxHeight(max_height.intValue());
-        Picasso.with(ActivityShow.this).load(series.getBannerUrl()).into(imageView);
+        try {
+            new LoadBanner().execute(series.getBannerUrl()).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // ================================================================
 
         // ========================= Set up the tabs ======================
@@ -94,6 +97,29 @@ public class ActivityShow extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+    }
+
+    /**
+     * Picasso won't load the image in the UI thread, so having to create this asynctask to do it.
+     */
+    private class LoadBanner extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... voids) {
+            return voids[0];
+        }
+
+        /**
+         * Load the banner.
+         */
+        @Override
+        protected void onPostExecute(String aVoid) {
+            ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
+            Picasso.with(ActivityShow.this).load(aVoid).into(imageView);
+        }
     }
 
 

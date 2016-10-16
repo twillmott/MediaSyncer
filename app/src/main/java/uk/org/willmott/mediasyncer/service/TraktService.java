@@ -303,11 +303,11 @@ public class TraktService {
     private Series baseShowToSeries(BaseShow baseShow, List<Season> seasons) {
 
         String thumb = null;
-        if (baseShow.show.images.thumb != null) {
-            thumb = baseShow.show.images.poster.medium;
+        if (baseShow.show.images.poster != null) {
+            thumb = baseShow.show.images.poster.thumb;
         }
         String banner = null;
-        if (baseShow.show.images.poster != null) {
+        if (baseShow.show.images.thumb != null) {
             banner = baseShow.show.images.thumb.full;
         }
 

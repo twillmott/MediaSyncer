@@ -1,5 +1,6 @@
 package uk.org.willmott.mediasyncer;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import uk.org.willmott.mediasyncer.model.Episode;
 import uk.org.willmott.mediasyncer.model.Season;
@@ -54,11 +56,12 @@ public class ActivitySeason extends AppCompatActivity {
         // ================================================================
 
         toolbar.setTitle("Season " + Integer.toString(season.getSeasonNumber()));
-        ImageView imageView = (ImageView) findViewById(R.id.season_banner);
-        // Set the banner container to be 16:9
-        Double max_height = imageView.getWidth() * 0.5625;
-        imageView.setMaxHeight(max_height.intValue());
-        Picasso.with(ActivitySeason.this).load(season.getBannerUrl()).into(imageView);
+
+        try {
+            new LoadBanner().execute(season.getBannerUrl()).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // =================== Now set up the list view. ========================
         // Create the recyclerView listing of all of our seasons.
@@ -74,5 +77,29 @@ public class ActivitySeason extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+
+    /**
+     * Picasso won't load the image in the UI thread, so having to create this asynctask to do it.
+     */
+    private class LoadBanner extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... voids) {
+            return voids[0];
+        }
+
+        /**
+         * Load the banner.
+         */
+        @Override
+        protected void onPostExecute(String aVoid) {
+            ImageView imageView = (ImageView) findViewById(R.id.season_banner);
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
+            Picasso.with(ActivitySeason.this).load(aVoid).into(imageView);
+        }
     }
 }

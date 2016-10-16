@@ -1,5 +1,6 @@
 package uk.org.willmott.mediasyncer;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
+
+import java.util.concurrent.ExecutionException;
 
 import uk.org.willmott.mediasyncer.model.Episode;
 
@@ -50,11 +53,11 @@ public class ActivityEpisode extends AppCompatActivity {
         toolbar.setTitle("Episode " + Integer.toString(episode.getEpisodeNumber()));
         toolbar.setSubtitle(episode.getTitle());
 
-        ImageView imageView = (ImageView) findViewById(R.id.episode_banner);
-        // Set the banner container to be 16:9
-        Double max_height = imageView.getWidth() * 0.5625;
-        imageView.setMaxHeight(max_height.intValue());
-        Picasso.with(ActivityEpisode.this).load(episode.getBannerUrl()).into(imageView);
+        try {
+            new LoadBanner().execute(episode.getBannerUrl()).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Episode information
         TextView textView = (TextView) findViewById(R.id.episode_info_text);
@@ -66,5 +69,29 @@ public class ActivityEpisode extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+
+    /**
+     * Picasso won't load the image in the UI thread, so having to create this asynctask to do it.
+     */
+    private class LoadBanner extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... voids) {
+            return voids[0];
+        }
+
+        /**
+         * Load the banner.
+         */
+        @Override
+        protected void onPostExecute(String aVoid) {
+            ImageView imageView = (ImageView) findViewById(R.id.episode_banner);
+            // Set the banner container to be 16:9
+            Double max_height = imageView.getWidth() * 0.5625;
+            imageView.setMaxHeight(max_height.intValue());
+            Picasso.with(ActivityEpisode.this).load(aVoid).into(imageView);
+        }
     }
 }
