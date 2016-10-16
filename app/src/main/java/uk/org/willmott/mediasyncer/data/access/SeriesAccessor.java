@@ -50,7 +50,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
      * Get all series's data from the database including seasons and episodes. Note that this may not
      * be complete (with the trakt api).
      */
-    protected List<uk.org.willmott.mediasyncer.model.Series> getAllSeriesAsModel() {
+    public List<uk.org.willmott.mediasyncer.model.Series> getAllSeriesAsModel() {
         try {
             List<uk.org.willmott.mediasyncer.model.Series> seriesModelList = new ArrayList<>();
             for (Series series : seriesDao.queryForAll()) {
@@ -129,7 +129,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 dao.getTvdbId(),
                 dao.getSeriesBanner(),
                 dao.getSeriesThumbnail(),
-                episodeAccessor.getModelForDao(episodeAccessor.getById(dao.getId())), //
+                dao.getNextEpisode() == null ? null : episodeAccessor.getModelForDao(episodeAccessor.getById(dao.getNextEpisode())), //
                 seasonAccessor.getSeasonsForSeries(dao),
                 dao.getOverview()
         );

@@ -17,6 +17,7 @@ import java.util.List;
 
 import uk.org.willmott.mediasyncer.ActivityShow;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
@@ -26,12 +27,12 @@ import uk.org.willmott.mediasyncer.service.TraktService;
  */
 public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHolder> {
 
-    List<BaseShow> mBaseShows;
+    List<Series> mShows;
     Context mContext;
     TraktService traktService;
 
-    public LibraryAdapter(Context context, List<BaseShow> shows, TraktService traktService) {
-        mBaseShows = shows;
+    public LibraryAdapter(Context context, List<Series> shows, TraktService traktService) {
+        mShows = shows;
         mContext = context;
         this.traktService = traktService;
     }
@@ -58,23 +59,23 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
      */
     @Override
     public void onBindViewHolder(LibraryAdapter.ViewHolder holder, int position) {
-        BaseShow baseShow = mBaseShows.get(position);
+        Series series = mShows.get(position);
 
         // Set up all the item views
         TextView title = holder.title;
         ImageView imageView = holder.image;
         TextView infoTextView = holder.info;
 
-        title.setText(baseShow.show.title);
+        title.setText(series.getTitle());
 
-        if (baseShow.next_episode != null) {
-            infoTextView.setText(baseShow.next_episode.title);
-        } else {
+        if (series.getNextEpisode() == null) {
             infoTextView.setText("Ended");
+        } else {
+            infoTextView.setText(series.getNextEpisode().getTitle());
         }
 
         // Add the show image to the list view
-        String image = baseShow.show.images.poster.full;
+        String image = series.getThumbnailUrl();
         if (image != null) {
             Picasso.with(mContext).load(image).resize(54,80).into(imageView);
         }
@@ -82,7 +83,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return mBaseShows.size();
+        return mShows.size();
     }
 
     // Provide a direct reference to each of the views within a data item
@@ -110,7 +111,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ActivityShow.class);
                     // Get the ID of the show we've clicked on
-                    String showId = LibraryAdapter.this.mBaseShows.get(getAdapterPosition()).show.ids.trakt.toString();
+                    String showId = LibraryAdapter.this.mShows.get(getAdapterPosition()).getTraktId();
                     // Put the id in to the intent
                     intent.putExtra("id", showId);
                     intent.putExtra("accessToken", traktService.getAccessToken());

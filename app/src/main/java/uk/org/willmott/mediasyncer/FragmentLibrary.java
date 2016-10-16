@@ -26,6 +26,7 @@ import com.uwetrottmann.trakt5.entities.BaseShow;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
@@ -45,7 +46,7 @@ public class FragmentLibrary extends Fragment {
     private ContentType contentType;
     // The list that represents the list item. It contains a hashmap that contains all the data
     // do display in the list fragment.
-    private List<BaseShow> showsList = new ArrayList<>();
+    private List<Series> showsList = new ArrayList<>();
     // The refresh button in the action bar.
     private MenuItem refresh;
     // The adapter used to display the listing results.
@@ -121,7 +122,13 @@ public class FragmentLibrary extends Fragment {
             // Start the progress spinner spinning.
             refresh.setActionView(R.layout.actionbar_indeterminate_progress);
             // Refresh the data list.
-            getTraktService().getAllShows(getContext());
+            showsList.clear();
+            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
+            libraryAdapter.notifyDataSetChanged();
+
+            // Stop the refresh button spinner.
+            refresh.setActionView(null);
+//            getTraktService().getAllShows(getContext());
 //            new RetrieveLibraryInfo().execute();
             return true;
         }
@@ -155,7 +162,7 @@ public class FragmentLibrary extends Fragment {
                 BaseShow showProgress = traktService.getShowWatchedProgress(show.show.ids.trakt.toString());
 
                 // Combine the base show and the show and add to the listing
-                showsList.add(traktService.combineBaseShows(show, showProgress));
+//                showsList.add(traktService.combineBaseShows(show, showProgress));
             }
 
             return shows;
