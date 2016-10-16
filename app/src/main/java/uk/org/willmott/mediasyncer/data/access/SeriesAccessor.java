@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
+import uk.org.willmott.mediasyncer.data.dao.Season;
 import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
+ * The class to handle all interaction with the series table of the database.
  * Created by tomwi on 11/10/2016.
  */
 
@@ -21,16 +23,19 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
     private static String LOG_TAG = SeriesAccessor.class.getSimpleName();
 
     Context context;
+    TvDbHelper helper;
+    Dao<Series, Integer> seriesDao;
+    SeasonAccessor seasonAccessor;
+    EpisodeAccessor episodeAccessor;
 
     public SeriesAccessor(Context context) {
         this.context = context;
+        helper = new TvDbHelper(context);
+        seriesDao = helper.getSeriesDao();
+        seasonAccessor = new SeasonAccessor(context);
+        episodeAccessor = new EpisodeAccessor(context);
     }
 
-    TvDbHelper helper = new TvDbHelper(context);
-    Dao<Series, Integer> seriesDao = helper.getSeriesDao();
-
-    SeasonAccessor seasonAccessor = new SeasonAccessor(context);
-    EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
 
     protected Series getSeriesForId(int id) {
         try {
@@ -40,7 +45,6 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
             return null;
         }
     }
-
 
     /**
      * Get all series's data from the database including seasons and episodes. Note that this may not
@@ -60,6 +64,49 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
     }
 
 
+    /**
+     * Writes a list of series models (including seasons and episodes) to the databse.
+     */
+    public void writeAllSeriesToDatabase(List<uk.org.willmott.mediasyncer.model.Series> allSeries) {
+        for (uk.org.willmott.mediasyncer.model.Series series : allSeries) {
+            try {
+                // Try getting the series from the database and updating it
+                Series databaseSeries = seriesDao.queryBuilder().where().eq(Series.TRAKT_ID_COLUMN, series.getTraktId()).queryForFirst();
+                if (databaseSeries == null) {
+                    seriesDao.create(getDaoForModel(series));
+                    Log.i(LOG_TAG, series.getTitle() + " created in the database.");
+                } else {
+                    Series newSeries = getDaoForModel(series);
+                    newSeries.setId(databaseSeries.getId());
+                    seriesDao.update(newSeries);
+                    Log.i(LOG_TAG, series.getTitle() + " updated in the database.");
+                }
+
+                // Now add all the seasons to the dbizzle
+                try {
+                    seasonAccessor.writeToDatabase(series.getSeasons(), seriesDao.queryBuilder().where().eq("traktId", series.getTraktId()).queryForFirst());
+                } catch (Exception e2) {
+                    Log.e(LOG_TAG, "Error writing " + series.getTitle() + " seasons to the database. " + e2.getMessage());
+                }
+
+                // Now that we've hopefully saved all seasons and episodes to the database, we can
+                // update the episode ID on the series
+                if (series.getNextEpisode() != null) {
+                    databaseSeries = seriesDao.queryBuilder().where().eq(Series.TRAKT_ID_COLUMN, series.getTraktId()).queryForFirst();
+                    try {
+                        databaseSeries.setNextEpisode(episodeAccessor.getForTraktId(series.getNextEpisode().getTraktId()).getId());
+                        seriesDao.update(databaseSeries);
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Error writing next episode for " + series.getTitle() + " to the database. " + e.getMessage());
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error writing " + series.getTitle() + " to the database. " + e.getMessage());
+            }
+        }
+    }
+
+
     @Override
     public Series getDaoForModel(uk.org.willmott.mediasyncer.model.Series model) {
         return new Series(
@@ -68,7 +115,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 model.getTvdbId(),
                 model.getThumbnailUrl(),
                 model.getBannerUrl(),
-                episodeAccessor.getDaoForModel(model.getNextEpisode()),
+                model.getNextEpisode() == null ? null : model.getNextEpisode().getId(),
                 model.getOverview()
         );
     }
@@ -82,7 +129,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 dao.getTvdbId(),
                 dao.getSeriesBanner(),
                 dao.getSeriesThumbnail(),
-                episodeAccessor.getModelForDao(dao.getNextEpisode()),
+                episodeAccessor.getModelForDao(episodeAccessor.getById(dao.getId())), //
                 seasonAccessor.getSeasonsForSeries(dao),
                 dao.getOverview()
         );

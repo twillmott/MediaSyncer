@@ -14,6 +14,7 @@ import uk.org.willmott.mediasyncer.data.dao.Season;
 import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
+ * The class to handle all interaction with the season table of the database.
  * Created by tomwi on 11/10/2016.
  */
 
@@ -22,18 +23,16 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
     private static String LOG_TAG = SeasonAccessor.class.getSimpleName();
 
     Context context;
-
-
+    TvDbHelper helper;
+    Dao<Season, Integer> seasonDao;
+    EpisodeAccessor episodeAccessor;
 
     public SeasonAccessor(Context context) {
         this.context = context;
+        helper = new TvDbHelper(context);
+        seasonDao = helper.getSeasonDao();
+        episodeAccessor = new EpisodeAccessor(context);
     }
-
-    TvDbHelper helper = new TvDbHelper(context);
-    Dao<Season, Integer> seasonDao = helper.getSeasonDao();
-
-    EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
-    SeriesAccessor seriesAccessor = new SeriesAccessor(context);
 
     /**
      * Get all the fully populated season (including episodes) for a given series.
@@ -61,11 +60,49 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
         }
     }
 
+
+    /**
+     * Write a list of seasons for a given show to the database.
+     *
+     * @param seasons All seasons must be of the same series
+     * @param series  The series that the season belongs to.
+     */
+    protected void writeToDatabase(List<uk.org.willmott.mediasyncer.model.Season> seasons, Series series) {
+        for (uk.org.willmott.mediasyncer.model.Season season : seasons) {
+            try {
+                // Try getting the series from the database
+                Season databaseSeason = seasonDao.queryBuilder().where().eq("traktId", season.getTraktId()).queryForFirst();
+                if (databaseSeason == null) {
+                    Season newSeason = getDaoForModel(season);
+                    newSeason.setSeries(series.getId());
+                    seasonDao.create(newSeason);
+                } else {
+                    Season newSeason = getDaoForModel(season);
+                    newSeason.setSeries(series.getId());
+                    newSeason.setId(databaseSeason.getId());
+                    seasonDao.update(newSeason);
+                }
+
+                // Now add all the episodes to the dbizzle
+                try {
+                    episodeAccessor.writeToDatabase(season.getEpisodes(), seasonDao.queryBuilder().where().eq("traktId", season.getTraktId()).queryForFirst());
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error writing " + series.getTitle() + ", season " + season.getSeasonNumber() + " episodes to the database. " + e.getMessage());
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error writing " + series.getTitle() + ", season " + season.getSeasonNumber() + " to the database. " + e.getMessage());
+            }
+        }
+    }
+
+
     @Override
     public Season getDaoForModel(uk.org.willmott.mediasyncer.model.Season model) {
         return new Season(
+                model.getTvdbId(),
+                model.getTraktId(),
                 model.getSeasonNumber(),
-                seriesAccessor.getSeriesForId(model.getId()), // Series
+                null,
                 model.getThumbnailUrl(),
                 model.getBannerUrl());
     }
@@ -74,6 +111,8 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
     public uk.org.willmott.mediasyncer.model.Season getModelForDao(Season dao) {
         return new uk.org.willmott.mediasyncer.model.Season(
                 dao.getId(),
+                dao.getTvdbId(),
+                dao.getTraktId(),
                 dao.getSeasonNumber(),
                 dao.getBanner(),
                 dao.getThumbnail(),

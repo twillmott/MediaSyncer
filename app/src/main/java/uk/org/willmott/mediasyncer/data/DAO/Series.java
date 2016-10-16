@@ -10,11 +10,13 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Series {
 
+    public static final String TRAKT_ID_COLUMN = "traktId";
+
     @DatabaseField(generatedId = true)
-    private int id;
+    private Integer id;
     @DatabaseField(index = true, canBeNull = false)
     private String title;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, unique = true, columnName = TRAKT_ID_COLUMN)
     private String traktId;
     @DatabaseField(canBeNull = false)
     private Integer tvdbId;
@@ -23,14 +25,14 @@ public class Series {
     @DatabaseField
     private String seriesBanner;
     @DatabaseField
-    private Episode nextEpisode;
+    private Integer nextEpisode;
     @DatabaseField
     private String overview;
 
     public Series() {
     } // No args constructor for ormlite
 
-    public Series(String title, String traktId, Integer tvdbId, String seriesThumbnail, String seriesBanner, Episode nextEpisode, String overview) {
+    public Series(String title, String traktId, Integer tvdbId, String seriesThumbnail, String seriesBanner, Integer nextEpisode, String overview) {
         this.title = title;
         this.traktId = traktId;
         this.tvdbId = tvdbId;
@@ -40,11 +42,11 @@ public class Series {
         this.overview = overview;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -88,11 +90,11 @@ public class Series {
         this.seriesBanner = seriesBanner;
     }
 
-    public Episode getNextEpisode() {
+    public Integer getNextEpisode() {
         return nextEpisode;
     }
 
-    public void setNextEpisode(Episode nextEpisode) {
+    public void setNextEpisode(Integer nextEpisode) {
         this.nextEpisode = nextEpisode;
     }
 

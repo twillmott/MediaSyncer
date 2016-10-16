@@ -23,7 +23,7 @@ import uk.org.willmott.mediasyncer.data.dao.Series;
 public class TvDbHelper extends OrmLiteSqliteOpenHelper {
 
     // If the database schema is changes, the database version needs to be incremented.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     static final String DATABASE_NAME = "tv.db";
 
@@ -34,7 +34,7 @@ public class TvDbHelper extends OrmLiteSqliteOpenHelper {
     private Dao<Episode, Integer> episodeDao = null;
 
     public TvDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     /**

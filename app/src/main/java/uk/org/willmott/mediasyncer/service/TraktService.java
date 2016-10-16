@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 import retrofit2.Response;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.model.Series;
 
@@ -311,7 +312,7 @@ public class TraktService {
         }
 
         return new Series(
-                0,
+                null,
                 baseShow.show.title,
                 baseShow.show.ids.trakt.toString(),
                 baseShow.show.ids.tvdb,
@@ -335,7 +336,9 @@ public class TraktService {
         }
 
         return new Season(
-                0,
+                null,
+                season.ids.tvdb,
+                season.ids.trakt.toString(),
                 season.number,
                 banner,
                 thumb,
@@ -345,6 +348,9 @@ public class TraktService {
 
     private uk.org.willmott.mediasyncer.model.Episode episodeMapper(Episode episode) {
 
+        if (episode == null) {
+            return null;
+        }
         String thumb = null;
         String banner = null;
         if (episode.images.screenshot != null) {
@@ -353,7 +359,9 @@ public class TraktService {
         }
 
         return new uk.org.willmott.mediasyncer.model.Episode(
-                0,
+                null,
+                episode.ids.tvdb,
+                episode.ids.trakt.toString(),
                 episode.title,
                 episode.number,
                 banner,
@@ -361,9 +369,9 @@ public class TraktService {
                 episode.overview);
     }
 
-    public List<Series> getAllShows() {
+    public List<Series> getAllShows(Context context) {
         try {
-            return new PopulateFullSeriesTree().execute().get();
+            return new RefreshFullTvDatabase().execute(context).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -393,10 +401,10 @@ public class TraktService {
     }
 
 
-    public class PopulateFullSeriesTree extends AsyncTask<Void, Void, List<Series>> {
+    public class RefreshFullTvDatabase extends AsyncTask<Context, Void, List<Series>> {
 
         @Override
-        protected List<Series> doInBackground(Void... params) {
+        protected List<Series> doInBackground(Context... params) {
 
             // Get all of the users shows, with the minimum information.
             // Get the users watchlist
@@ -445,7 +453,8 @@ public class TraktService {
 
                 showModels.add(baseShowToSeries(fullShow, seasonModels));
             }
-
+            SeriesAccessor accessor = new SeriesAccessor(params[0]);
+            accessor.writeAllSeriesToDatabase(showModels);
             return showModels;
         }
     }

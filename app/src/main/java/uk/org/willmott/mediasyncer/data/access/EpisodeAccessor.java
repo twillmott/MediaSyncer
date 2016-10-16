@@ -11,8 +11,10 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
 import uk.org.willmott.mediasyncer.data.dao.Episode;
 import uk.org.willmott.mediasyncer.data.dao.Season;
+import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
+ * The class to handle all interaction with the episode table of the database.
  * Created by tomwi on 11/10/2016.
  */
 
@@ -21,15 +23,15 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     private static String LOG_TAG = EpisodeAccessor.class.getSimpleName();
 
     Context context;
+    TvDbHelper helper;
+    Dao<Episode, Integer> episodeDao;
 
     public EpisodeAccessor(Context context) {
         this.context = context;
+        helper = new TvDbHelper(context);
+        episodeDao = helper.getEpisodeDao();
     }
 
-    TvDbHelper helper = new TvDbHelper(context);
-    Dao<Episode, Integer> episodeDao = helper.getEpisodeDao();
-
-    SeasonAccessor seasonAccessor = new SeasonAccessor(context);
 
 
     protected List<uk.org.willmott.mediasyncer.model.Episode> getEpisodesForSeason(Season season) {
@@ -47,10 +49,66 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     }
 
 
+    /**
+     * Write a list of episodes for a given show to the database.
+     *
+     * @param episodes All episodes must be of the same season
+     * @param season   The episode that the season belongs to.
+     */
+    protected void writeToDatabase(List<uk.org.willmott.mediasyncer.model.Episode> episodes, Season season) {
+        for (uk.org.willmott.mediasyncer.model.Episode episode : episodes) {
+            try {
+                // Try getting the series from the database
+                Episode databaseEpisode = episodeDao.queryBuilder().where().eq("traktId", episode.getTraktId()).queryForFirst();
+                if (databaseEpisode == null) {
+                    Episode newEpisode = getDaoForModel(episode);
+                    newEpisode.setSeason(season.getId());
+                    episodeDao.create(newEpisode);
+                } else {
+                    Episode newEpisode = getDaoForModel(episode);
+                    newEpisode.setSeason(season.getId());
+                    newEpisode.setId(databaseEpisode.getId());
+                    episodeDao.update(newEpisode);
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error writing episode: " + episode.getTitle() + " to the database. " + e.getMessage());
+            }
+        }
+    }
+
+
+    protected Episode getById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        try {
+            return episodeDao.queryForId(id);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error fetching episode with id :[" + id + "] from the databse.");
+            return null;
+        }
+    }
+
+
+    protected Episode getForTraktId(String traktId) {
+        if (traktId == null) {
+            return null;
+        }
+        try {
+            return episodeDao.queryBuilder().where().eq("traktId", traktId).queryForFirst();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error fetching episode with trakt id :[" + traktId + "] from the databse.");
+            return null;
+        }
+    }
+
+
     @Override
     public Episode getDaoForModel(uk.org.willmott.mediasyncer.model.Episode model) {
         return new Episode(
-                seasonAccessor.getSeasonById(model.getId()),
+                model.getTvdbId(),
+                model.getTraktId(),
+                null,
                 model.getEpisodeNumber(),
                 model.getTitle(),
                 model.getOverview(),
@@ -63,6 +121,8 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     public uk.org.willmott.mediasyncer.model.Episode getModelForDao(Episode dao) {
         return new uk.org.willmott.mediasyncer.model.Episode(
                 dao.getId(),
+                dao.getTvdbId(),
+                dao.getTraktId(),
                 dao.getTitle(),
                 dao.getEpisodeNumber(),
                 dao.getBannerUrl(),

@@ -11,12 +11,16 @@ import java.util.List;
 public class Season {
     private Integer id;
     private int seasonNumber;
+    private Integer tvdbId;
+    private String traktId;
     private String bannerUrl;
     private String thumbnailUrl;
     private List<Episode> episodes;
 
-    public Season(Integer id, int seasonNumber, String bannerUrl, String thumbnailUrl, List<Episode> episodes) {
+    public Season(Integer id, Integer tvdbId, String traktId, int seasonNumber, String bannerUrl, String thumbnailUrl, List<Episode> episodes) {
         this.id = id;
+        this.tvdbId = tvdbId;
+        this.traktId = traktId;
         this.seasonNumber = seasonNumber;
         this.bannerUrl = bannerUrl;
         this.thumbnailUrl = thumbnailUrl;
@@ -57,5 +61,21 @@ public class Season {
 
     public void setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
+    }
+
+    public String getTraktId() {
+        return traktId;
+    }
+
+    public void setTraktId(String traktId) {
+        this.traktId = traktId;
     }
 }

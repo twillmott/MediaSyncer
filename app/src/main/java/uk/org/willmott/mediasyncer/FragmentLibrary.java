@@ -121,7 +121,7 @@ public class FragmentLibrary extends Fragment {
             // Start the progress spinner spinning.
             refresh.setActionView(R.layout.actionbar_indeterminate_progress);
             // Refresh the data list.
-            getTraktService().getAllShows();
+            getTraktService().getAllShows(getContext());
 //            new RetrieveLibraryInfo().execute();
             return true;
         }

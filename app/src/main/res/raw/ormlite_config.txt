@@ -1,0 +1,115 @@
+#
+# generated on 2016/10/16 11:24:25
+#
+# --table-start--
+dataClass=uk.org.willmott.mediasyncer.data.dao.Episode
+tableName=episode
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=season
+columnName=seasonId
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=episodeNumber
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=traktId
+canBeNull=false
+unique=true
+# --field-end--
+# --field-start--
+fieldName=tvdbId
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=title
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=overview
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=bannerUrl
+# --field-end--
+# --field-start--
+fieldName=thumbnailUrl
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=uk.org.willmott.mediasyncer.data.dao.Season
+tableName=season
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=tvdbId
+unique=true
+# --field-end--
+# --field-start--
+fieldName=seasonNumber
+canBeNull=false
+unique=true
+# --field-end--
+# --field-start--
+fieldName=series
+columnName=seriesId
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=thumbnail
+# --field-end--
+# --field-start--
+fieldName=banner
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=uk.org.willmott.mediasyncer.data.dao.Series
+tableName=series
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=title
+canBeNull=false
+indexName=series_title_idx
+# --field-end--
+# --field-start--
+fieldName=traktId
+columnName=traktId
+canBeNull=false
+unique=true
+# --field-end--
+# --field-start--
+fieldName=tvdbId
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=seriesThumbnail
+# --field-end--
+# --field-start--
+fieldName=seriesBanner
+# --field-end--
+# --field-start--
+fieldName=nextEpisode
+# --field-end--
+# --field-start--
+fieldName=overview
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

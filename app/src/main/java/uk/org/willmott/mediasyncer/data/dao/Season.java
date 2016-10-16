@@ -13,12 +13,16 @@ public class Season {
     public static final String SERIES_COLUMN = "seriesId";
 
     @DatabaseField(generatedId = true)
-    private int id;
+    private Integer id;
+    @DatabaseField(unique = true)
+    private String traktId;
+    @DatabaseField
+    private Integer tvdbId;
     @DatabaseField(canBeNull = false)
     private int seasonNumber;
     // Foreign key to the series table. Cannot be null.
-    @DatabaseField(foreign = true, canBeNull = false, columnName = SERIES_COLUMN)
-    private Series series;
+    @DatabaseField(canBeNull = false, columnName = SERIES_COLUMN)
+    private Integer series;
     @DatabaseField
     private String thumbnail;
     @DatabaseField
@@ -28,7 +32,9 @@ public class Season {
     public Season() {
     } // No args constructor for ormlite.
 
-    public Season(int seasonNumber, Series series, String thumbnail, String banner) {
+    public Season(Integer tvdbId, String traktId, int seasonNumber, Integer series, String thumbnail, String banner) {
+        this.tvdbId = tvdbId;
+        this.traktId = traktId;
         this.seasonNumber = seasonNumber;
         this.series = series;
         this.thumbnail = thumbnail;
@@ -43,7 +49,7 @@ public class Season {
         this.seasonNumber = seasonNumber;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -51,11 +57,11 @@ public class Season {
         this.id = id;
     }
 
-    public Series getSeries() {
+    public Integer getSeries() {
         return series;
     }
 
-    public void setSeries(Series series) {
+    public void setSeries(Integer series) {
         this.series = series;
     }
 
@@ -73,5 +79,21 @@ public class Season {
 
     public void setBanner(String banner) {
         this.banner = banner;
+    }
+
+    public String getTraktId() {
+        return traktId;
+    }
+
+    public void setTraktId(String traktId) {
+        this.traktId = traktId;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
     }
 }

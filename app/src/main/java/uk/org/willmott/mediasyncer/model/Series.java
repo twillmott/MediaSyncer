@@ -12,17 +12,17 @@ import java.util.List;
 @Parcel
 public class Series {
 
-    private int id;
+    private Integer id;
     private String title;
     private String traktId;
-    private int tvdbId;
+    private Integer tvdbId;
     private String bannerUrl;
     private String thumbnailUrl;
     private Episode nextEpisode;
     private List<Season> seasons;
     private String overview;
 
-    public Series(int id, String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
+    public Series(Integer id, String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
         this.id = id;
         this.title = title;
         this.traktId = traktId;
@@ -54,11 +54,11 @@ public class Series {
         this.traktId = traktId;
     }
 
-    public int getTvdbId() {
+    public Integer getTvdbId() {
         return tvdbId;
     }
 
-    public void setTvdbId(int tvdbId) {
+    public void setTvdbId(Integer tvdbId) {
         this.tvdbId = tvdbId;
     }
 

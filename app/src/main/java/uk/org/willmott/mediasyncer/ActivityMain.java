@@ -38,9 +38,6 @@ public class ActivityMain extends AppCompatActivity {
      */
     private MainSectionsPagerAdapter mMainSectionsPagerAdapter;
 
-    TvDbHelper helper = new TvDbHelper(this);
-    Dao<Series, Integer> seriesDao = null;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
