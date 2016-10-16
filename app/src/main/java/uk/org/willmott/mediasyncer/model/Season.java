@@ -9,13 +9,16 @@ import java.util.List;
  */
 @Parcel
 public class Season {
-    private Integer id;
-    private int seasonNumber;
-    private Integer tvdbId;
-    private String traktId;
-    private String bannerUrl;
-    private String thumbnailUrl;
-    private List<Episode> episodes;
+    Integer id;
+    int seasonNumber;
+    Integer tvdbId;
+    String traktId;
+    String bannerUrl;
+    String thumbnailUrl;
+    List<Episode> episodes;
+
+    public Season() {
+    } // Required for parceler
 
     public Season(Integer id, Integer tvdbId, String traktId, int seasonNumber, String bannerUrl, String thumbnailUrl, List<Episode> episodes) {
         this.id = id;

@@ -16,13 +16,16 @@ import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.Show;
 
+import org.parceler.Parcels;
+
+import uk.org.willmott.mediasyncer.model.Season;
+import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 public class ActivityShow extends AppCompatActivity {
 
-    String showId;
     TraktService traktService;
-    Show show;
+    Series series;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,10 +43,12 @@ public class ActivityShow extends AppCompatActivity {
 
     public TraktService getTraktService() { return traktService; }
 
-    public String getShowId() {return showId;}
+    public Series getSeries() {
+        return series;
+    }
 
-    public Show getShow() {
-        return show;
+    public String getShowId() {
+        return series.getTraktId();
     }
 
     @Override
@@ -52,10 +57,10 @@ public class ActivityShow extends AppCompatActivity {
         setContentView(R.layout.activity_show);
 
         // Get the ID of the show we're displaying
-        showId = getIntent().getStringExtra("id");
         traktService = new TraktService(getIntent().getStringExtra("accessToken"));
+        series = (Series) Parcels.unwrap(getIntent().getParcelableExtra("show"));
 
-        // Set up the toolbar
+        // ================== Set up the toolbar ==========================
         Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
@@ -65,6 +70,15 @@ public class ActivityShow extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        // ================================================================
+        // ================== Set up the activity vies=====================
+        toolbar.setTitle(series.getTitle());
+
+        ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
+        // Set the banner container to be 16:9
+        Double max_height = imageView.getWidth() * 0.5625;
+        imageView.setMaxHeight(max_height.intValue());
+        Picasso.with(ActivityShow.this).load(series.getBannerUrl()).into(imageView);
         // ================================================================
 
         // ========================= Set up the tabs ======================
@@ -78,14 +92,6 @@ public class ActivityShow extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.show_tabs);
         tabLayout.setupWithViewPager(mViewPager);
         // ================================================================
-
-        // Download the show information. We have a .get() on the end so that we wait until
-        // all the info is loaded before we load the screen.
-        try {
-            new RetrieveShowInfo().execute().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         // Placeholder code in case we want to add a floating action button.
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -105,35 +111,6 @@ public class ActivityShow extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
-
-    /**
-     * An async task that will download all the info on the show that we need to display the show
-     * activity. i.e. the banner and show name.
-     */
-    private class RetrieveShowInfo extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            show = getTraktService().getShow(showId);
-            return null;
-        }
-
-        /**
-         * Set all of the UI elements.
-         */
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.shows_toolbar);
-            toolbar.setTitle(show.title);
-            ImageView imageView = (ImageView) findViewById(R.id.shows_banner);
-            // Set the banner container to be 16:9
-            Double max_height = imageView.getWidth() * 0.5625;
-            imageView.setMaxHeight(max_height.intValue());
-            String url = show.images.thumb.full;
-            Picasso.with(ActivityShow.this).load(url).into(imageView);
-        }
-    }
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

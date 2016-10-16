@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.model.Actor;
+import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.tvdb.model.ShowActors;
 import uk.org.willmott.mediasyncer.tvdb.model.ShowActorData;
 import uk.org.willmott.mediasyncer.tvdb.service.TheTvdbService;
@@ -46,7 +47,7 @@ public class FragmentShowOverview extends Fragment {
     TheTvdbService tvdbService;
 
     // The show that we're loading
-    Show show;
+    Series show;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -69,7 +70,7 @@ public class FragmentShowOverview extends Fragment {
                              Bundle savedInstanceState) {
 
         // Get the show from the parent activity.
-        show = ((ActivityShow) getActivity()).getShow();
+        show = ((ActivityShow) getActivity()).getSeries();
 
         tvdbService = new TheTvdbService();
 
@@ -77,7 +78,7 @@ public class FragmentShowOverview extends Fragment {
 
         // Set the show overview text
         TextView textView = (TextView) rootView.findViewById(R.id.show_overview);
-        textView.setText(show.overview);
+        textView.setText(show.getOverview());
 
         // =================== Set up the actor scroller ========================
         // Set up the recycler view to dispaly the list of shows that we just loaded.
@@ -104,7 +105,7 @@ public class FragmentShowOverview extends Fragment {
     private class RetrieveActors extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ShowActors showActors = tvdbService.getShowActors(show.ids.tvdb.toString());
+            ShowActors showActors = tvdbService.getShowActors(show.getTvdbId().toString());
 
             for (ShowActorData showActorData : showActors.getData()) {
                 actorList.add(new Actor("http://thetvdb.com/banners/" + showActorData.getImage(), showActorData.getName()));

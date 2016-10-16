@@ -8,14 +8,17 @@ import org.parceler.Parcel;
 @Parcel
 public class Episode {
 
-    private Integer id;
-    private int episodeNumber;
-    private int tvdbId;
-    private String traktId;
-    private String title;
-    private String bannerUrl;
-    private String thumbnailUrl;
-    private String overview;
+    Integer id;
+    int episodeNumber;
+    int tvdbId;
+    String traktId;
+    String title;
+    String bannerUrl;
+    String thumbnailUrl;
+    String overview;
+
+    public Episode() {
+    } //Required for parcel
 
     public Episode(Integer id, int tvdbId, String traktId, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
         this.id = id;

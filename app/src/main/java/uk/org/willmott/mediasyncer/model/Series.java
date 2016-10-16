@@ -12,15 +12,18 @@ import java.util.List;
 @Parcel
 public class Series {
 
-    private Integer id;
-    private String title;
-    private String traktId;
-    private Integer tvdbId;
-    private String bannerUrl;
-    private String thumbnailUrl;
-    private Episode nextEpisode;
-    private List<Season> seasons;
-    private String overview;
+    Integer id;
+    String title;
+    String traktId;
+    Integer tvdbId;
+    String bannerUrl;
+    String thumbnailUrl;
+    Episode nextEpisode;
+    List<Season> seasons;
+    String overview;
+
+    public Series() {
+    } // Required for parceler.
 
     public Series(Integer id, String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
         this.id = id;

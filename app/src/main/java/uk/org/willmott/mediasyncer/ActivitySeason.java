@@ -21,6 +21,8 @@ import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.entities.Season;
 import com.uwetrottmann.trakt5.enums.Extended;
 
+import org.parceler.Parcels;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +67,7 @@ public class ActivitySeason extends AppCompatActivity {
 
         // Get the ID of the show we're displaying
         showId = getIntent().getStringExtra("id");
-        seasonNumber = getIntent().getIntExtra("season", 0);
+        seasonNumber = ((uk.org.willmott.mediasyncer.model.Season) Parcels.unwrap(getIntent().getParcelableExtra("season"))).getSeasonNumber();
         traktService = new TraktService(getIntent().getStringExtra("accessToken"));
 
         // Set up the toolbar

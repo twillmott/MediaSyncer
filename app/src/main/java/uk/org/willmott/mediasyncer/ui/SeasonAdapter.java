@@ -11,13 +11,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.uwetrottmann.trakt5.entities.Season;
+
+import org.parceler.Parcel;
+import org.parceler.Parcels;
 
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.R;
 import uk.org.willmott.mediasyncer.ActivitySeason;
 import uk.org.willmott.mediasyncer.ActivityShow;
+import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.service.TraktService;
 
 /**
@@ -66,14 +69,13 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
 
         // Set up all the item views
         TextView title = holder.title;
-        title.setText(mContext.getString(R.string.season).concat(" ").concat(season.number.toString()));
+        title.setText(mContext.getString(R.string.season).concat(" ").concat(Integer.toString(season.getSeasonNumber())));
         TextView info = holder.info;
-        info.setText(season.episode_count.toString() + " Episodes (" + season.aired_episodes + " Aired)");
-        ImageView imageView = holder.image;
+//        info.setText(season.episode_count.toString() + " Episodes (" + season.aired_episodes + " Aired)");
+        info.setText("Add functionality to inform number of aired episodes");
 
-        if (season.images.poster.thumb != null) {
-            Picasso.with(mContext).load(season.images.poster.thumb).resize(54,80).into(imageView);
-        }
+        ImageView imageView = holder.image;
+        Picasso.with(mContext).load(season.getThumbnailUrl()).resize(54, 80).into(imageView);
     }
 
     @Override
@@ -107,16 +109,13 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
                 public void onClick(View view) {
 
                     Intent intent = new Intent(view.getContext(), ActivitySeason.class);
-                    // Get the ID of the show we've clicked on
-                    int seasonNumber = SeasonAdapter.this.mSeasons.get(getAdapterPosition()).number;
                     // Put the id in to the intent
                     intent.putExtra("id", showId);
-                    intent.putExtra("season", seasonNumber);
+                    intent.putExtra("season", Parcels.wrap(SeasonAdapter.this.mSeasons.get(getAdapterPosition())));
                     intent.putExtra("accessToken", traktService.getAccessToken());
 
                     view.getContext().startActivity(intent);
                     ((ActivityShow)view.getContext()).overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
                 }
             });
 

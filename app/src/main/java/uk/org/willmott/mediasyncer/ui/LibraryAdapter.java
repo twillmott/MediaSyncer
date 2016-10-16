@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 
+import org.parceler.Parcels;
+
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.ActivityShow;
@@ -113,8 +115,8 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                     // Get the ID of the show we've clicked on
                     String showId = LibraryAdapter.this.mShows.get(getAdapterPosition()).getTraktId();
                     // Put the id in to the intent
-                    intent.putExtra("id", showId);
                     intent.putExtra("accessToken", traktService.getAccessToken());
+                    intent.putExtra("show", Parcels.wrap(mShows.get(getAdapterPosition())));
                     view.getContext().startActivity(intent);
                 }
             });
