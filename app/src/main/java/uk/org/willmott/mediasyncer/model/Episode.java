@@ -10,7 +10,7 @@ public class Episode {
 
     Integer id;
     int episodeNumber;
-    int tvdbId;
+    Integer tmdbId;
     String traktId;
     String title;
     String bannerUrl;
@@ -20,9 +20,9 @@ public class Episode {
     public Episode() {
     } //Required for parcel
 
-    public Episode(Integer id, int tvdbId, String traktId, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
+    public Episode(Integer id, Integer tmdbId, String traktId, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
         this.id = id;
-        this.tvdbId = tvdbId;
+        this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.episodeNumber = episodeNumber;
         this.bannerUrl = bannerUrl;
@@ -75,12 +75,12 @@ public class Episode {
         this.title = title;
     }
 
-    public int getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(int tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(int tmdbId) {
+        this.tmdbId = tmdbId;
     }
 
     public String getTraktId() {

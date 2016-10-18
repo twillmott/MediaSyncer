@@ -20,7 +20,7 @@ public class Episode {
     @DatabaseField(canBeNull = false, unique = true)
     private String traktId;
     @DatabaseField
-    private Integer tvdbId;
+    private Integer tmdbId;
     @DatabaseField(canBeNull = false)
     private String title;
     @DatabaseField
@@ -33,8 +33,8 @@ public class Episode {
     public Episode() {
     } // Required by ormlite.
 
-    public Episode(Integer tvdbId, String traktId, Integer season, int episodeNumber, String title, String overview, String bannerUrl, String thumbnailUrl) {
-        this.tvdbId = tvdbId;
+    public Episode(Integer tmdbId, String traktId, Integer season, int episodeNumber, String title, String overview, String bannerUrl, String thumbnailUrl) {
+        this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.season = season;
         this.episodeNumber = episodeNumber;
@@ -108,11 +108,11 @@ public class Episode {
         this.traktId = traktId;
     }
 
-    public Integer getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(Integer tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 }

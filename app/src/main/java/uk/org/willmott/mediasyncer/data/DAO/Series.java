@@ -18,8 +18,8 @@ public class Series {
     private String title;
     @DatabaseField(canBeNull = false, unique = true, columnName = TRAKT_ID_COLUMN)
     private String traktId;
-    @DatabaseField(canBeNull = false)
-    private Integer tvdbId;
+    @DatabaseField
+    private Integer tmdbId;
     @DatabaseField
     private String seriesThumbnail;
     @DatabaseField
@@ -32,10 +32,10 @@ public class Series {
     public Series() {
     } // No args constructor for ormlite
 
-    public Series(String title, String traktId, Integer tvdbId, String seriesThumbnail, String seriesBanner, Integer nextEpisode, String overview) {
+    public Series(String title, String traktId, Integer tmdbId, String seriesThumbnail, String seriesBanner, Integer nextEpisode, String overview) {
         this.title = title;
         this.traktId = traktId;
-        this.tvdbId = tvdbId;
+        this.tmdbId = tmdbId;
         this.seriesThumbnail = seriesThumbnail;
         this.seriesBanner = seriesBanner;
         this.nextEpisode = nextEpisode;
@@ -66,12 +66,12 @@ public class Series {
         this.traktId = traktId;
     }
 
-    public Integer getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(Integer tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 
     public String getSeriesThumbnail() {

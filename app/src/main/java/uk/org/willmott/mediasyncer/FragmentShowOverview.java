@@ -15,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.uwetrottmann.trakt5.entities.Show;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +103,7 @@ public class FragmentShowOverview extends Fragment {
     private class RetrieveActors extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ShowActors showActors = tvdbService.getShowActors(show.getTvdbId().toString());
+            ShowActors showActors = tvdbService.getShowActors(show.getTmdbId().toString());
 
             for (ShowActorData showActorData : showActors.getData()) {
                 actorList.add(new Actor("http://thetvdb.com/banners/" + showActorData.getImage(), showActorData.getName()));

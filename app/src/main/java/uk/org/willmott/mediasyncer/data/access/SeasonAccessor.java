@@ -99,7 +99,7 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
     @Override
     public Season getDaoForModel(uk.org.willmott.mediasyncer.model.Season model) {
         return new Season(
-                model.getTvdbId(),
+                model.getTmdbId(),
                 model.getTraktId(),
                 model.getSeasonNumber(),
                 null,
@@ -111,7 +111,7 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
     public uk.org.willmott.mediasyncer.model.Season getModelForDao(Season dao) {
         return new uk.org.willmott.mediasyncer.model.Season(
                 dao.getId(),
-                dao.getTvdbId(),
+                dao.getTmdbId(),
                 dao.getTraktId(),
                 dao.getSeasonNumber(),
                 dao.getBanner(),

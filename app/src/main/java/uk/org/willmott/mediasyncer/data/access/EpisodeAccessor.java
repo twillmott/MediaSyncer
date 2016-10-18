@@ -11,7 +11,6 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
 import uk.org.willmott.mediasyncer.data.dao.Episode;
 import uk.org.willmott.mediasyncer.data.dao.Season;
-import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
  * The class to handle all interaction with the episode table of the database.
@@ -106,7 +105,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     @Override
     public Episode getDaoForModel(uk.org.willmott.mediasyncer.model.Episode model) {
         return new Episode(
-                model.getTvdbId(),
+                model.getTmdbId(),
                 model.getTraktId(),
                 null,
                 model.getEpisodeNumber(),
@@ -121,7 +120,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     public uk.org.willmott.mediasyncer.model.Episode getModelForDao(Episode dao) {
         return new uk.org.willmott.mediasyncer.model.Episode(
                 dao.getId(),
-                dao.getTvdbId(),
+                dao.getTmdbId(),
                 dao.getTraktId(),
                 dao.getTitle(),
                 dao.getEpisodeNumber(),

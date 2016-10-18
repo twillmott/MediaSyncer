@@ -15,7 +15,7 @@ public class Series {
     Integer id;
     String title;
     String traktId;
-    Integer tvdbId;
+    Integer tmdbId;
     String bannerUrl;
     String thumbnailUrl;
     Episode nextEpisode;
@@ -25,11 +25,11 @@ public class Series {
     public Series() {
     } // Required for parceler.
 
-    public Series(Integer id, String title, String traktId, int tvdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
+    public Series(Integer id, String title, String traktId, Integer tmdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
         this.id = id;
         this.title = title;
         this.traktId = traktId;
-        this.tvdbId = tvdbId;
+        this.tmdbId = tmdbId;
         this.bannerUrl = bannerUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.nextEpisode = nextEpisode;
@@ -57,12 +57,12 @@ public class Series {
         this.traktId = traktId;
     }
 
-    public Integer getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(Integer tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 
     public String getBannerUrl() {

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
-import uk.org.willmott.mediasyncer.data.dao.Season;
 import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
@@ -112,7 +111,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
         return new Series(
                 model.getTitle(),
                 model.getTraktId(),
-                model.getTvdbId(),
+                model.getTmdbId(),
                 model.getThumbnailUrl(),
                 model.getBannerUrl(),
                 model.getNextEpisode() == null ? null : model.getNextEpisode().getId(),
@@ -126,7 +125,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 dao.getId(),
                 dao.getTitle(),
                 dao.getTraktId(),
-                dao.getTvdbId(),
+                dao.getTmdbId(),
                 dao.getSeriesBanner(),
                 dao.getSeriesThumbnail(),
                 dao.getNextEpisode() == null ? null : episodeAccessor.getModelForDao(episodeAccessor.getById(dao.getNextEpisode())), //

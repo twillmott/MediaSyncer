@@ -17,7 +17,7 @@ public class Season {
     @DatabaseField(unique = true)
     private String traktId;
     @DatabaseField
-    private Integer tvdbId;
+    private Integer tmdbId;
     @DatabaseField(canBeNull = false)
     private int seasonNumber;
     // Foreign key to the series table. Cannot be null.
@@ -32,8 +32,8 @@ public class Season {
     public Season() {
     } // No args constructor for ormlite.
 
-    public Season(Integer tvdbId, String traktId, int seasonNumber, Integer series, String thumbnail, String banner) {
-        this.tvdbId = tvdbId;
+    public Season(Integer tmdbId, String traktId, int seasonNumber, Integer series, String thumbnail, String banner) {
+        this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.seasonNumber = seasonNumber;
         this.series = series;
@@ -89,11 +89,11 @@ public class Season {
         this.traktId = traktId;
     }
 
-    public Integer getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(Integer tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 }

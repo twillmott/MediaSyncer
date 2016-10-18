@@ -24,7 +24,7 @@ canBeNull=false
 unique=true
 # --field-end--
 # --field-start--
-fieldName=tvdbId
+fieldName=traktId
 canBeNull=false
 # --field-end--
 # --field-start--
@@ -53,7 +53,7 @@ fieldName=id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=tvdbId
+fieldName=traktId
 unique=true
 # --field-end--
 # --field-start--
@@ -95,7 +95,7 @@ canBeNull=false
 unique=true
 # --field-end--
 # --field-start--
-fieldName=tvdbId
+fieldName=traktId
 canBeNull=false
 # --field-end--
 # --field-start--

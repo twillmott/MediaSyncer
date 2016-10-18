@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.uwetrottmann.trakt5.entities.BaseShow;
 
 import org.parceler.Parcels;
 

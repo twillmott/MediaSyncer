@@ -315,7 +315,7 @@ public class TraktService {
                 null,
                 baseShow.show.title,
                 baseShow.show.ids.trakt.toString(),
-                baseShow.show.ids.tvdb,
+                baseShow.show.ids.tmdb,
                 banner,
                 thumb,
                 episodeMapper(baseShow.next_episode),
@@ -337,7 +337,7 @@ public class TraktService {
 
         return new Season(
                 null,
-                season.ids.tvdb,
+                season.ids.tmdb,
                 season.ids.trakt.toString(),
                 season.number,
                 banner,
@@ -360,7 +360,7 @@ public class TraktService {
 
         return new uk.org.willmott.mediasyncer.model.Episode(
                 null,
-                episode.ids.tvdb,
+                episode.ids.tmdb,
                 episode.ids.trakt.toString(),
                 episode.title,
                 episode.number,

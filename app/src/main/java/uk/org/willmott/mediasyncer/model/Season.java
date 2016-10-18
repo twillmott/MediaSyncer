@@ -11,7 +11,7 @@ import java.util.List;
 public class Season {
     Integer id;
     int seasonNumber;
-    Integer tvdbId;
+    Integer tmdbId;
     String traktId;
     String bannerUrl;
     String thumbnailUrl;
@@ -20,9 +20,9 @@ public class Season {
     public Season() {
     } // Required for parceler
 
-    public Season(Integer id, Integer tvdbId, String traktId, int seasonNumber, String bannerUrl, String thumbnailUrl, List<Episode> episodes) {
+    public Season(Integer id, Integer tmdbId, String traktId, int seasonNumber, String bannerUrl, String thumbnailUrl, List<Episode> episodes) {
         this.id = id;
-        this.tvdbId = tvdbId;
+        this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.seasonNumber = seasonNumber;
         this.bannerUrl = bannerUrl;
@@ -66,12 +66,12 @@ public class Season {
         this.episodes = episodes;
     }
 
-    public Integer getTvdbId() {
-        return tvdbId;
+    public Integer getTmdbId() {
+        return tmdbId;
     }
 
-    public void setTvdbId(Integer tvdbId) {
-        this.tvdbId = tvdbId;
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
     }
 
     public String getTraktId() {
