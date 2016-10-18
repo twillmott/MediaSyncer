@@ -18,9 +18,15 @@ public class Episode {
     @DatabaseField(canBeNull = false)
     private int episodeNumber;
     @DatabaseField(canBeNull = false, unique = true)
-    private String traktId;
+    private Integer traktId;
     @DatabaseField
     private Integer tmdbId;
+    @DatabaseField
+    private Integer tvdbId;
+    @DatabaseField
+    private Integer tvrageId;
+    @DatabaseField
+    private String imdbId;
     @DatabaseField(canBeNull = false)
     private String title;
     @DatabaseField
@@ -33,7 +39,7 @@ public class Episode {
     public Episode() {
     } // Required by ormlite.
 
-    public Episode(Integer tmdbId, String traktId, Integer season, int episodeNumber, String title, String overview, String bannerUrl, String thumbnailUrl) {
+    public Episode(Integer tmdbId, Integer traktId, Integer tvdbId, Integer tvrageId, String imdbId, Integer season, int episodeNumber, String title, String overview, String bannerUrl, String thumbnailUrl) {
         this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.season = season;
@@ -42,6 +48,33 @@ public class Episode {
         this.overview = overview;
         this.bannerUrl = bannerUrl;
         this.thumbnailUrl = thumbnailUrl;
+        this.tvdbId = tvdbId;
+        this.tvrageId = tvrageId;
+        this.imdbId = imdbId;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
+    }
+
+    public Integer getTvrageId() {
+        return tvrageId;
+    }
+
+    public void setTvrageId(Integer tvrageId) {
+        this.tvrageId = tvrageId;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public Integer getId() {
@@ -100,11 +133,11 @@ public class Episode {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public String getTraktId() {
+    public Integer getTraktId() {
         return traktId;
     }
 
-    public void setTraktId(String traktId) {
+    public void setTraktId(Integer traktId) {
         this.traktId = traktId;
     }
 

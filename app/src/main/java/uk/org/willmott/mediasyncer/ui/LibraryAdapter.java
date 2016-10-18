@@ -112,7 +112,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
                 public void onClick(View view) {
                     Intent intent = new Intent(view.getContext(), ActivityShow.class);
                     // Get the ID of the show we've clicked on
-                    String showId = LibraryAdapter.this.mShows.get(getAdapterPosition()).getTraktId();
+                    String showId = LibraryAdapter.this.mShows.get(getAdapterPosition()).getTraktId().toString();
                     // Put the id in to the intent
                     intent.putExtra("accessToken", traktService.getAccessToken());
                     intent.putExtra("show", Parcels.wrap(mShows.get(getAdapterPosition())));

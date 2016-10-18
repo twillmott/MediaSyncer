@@ -15,9 +15,15 @@ public class Season {
     @DatabaseField(generatedId = true)
     private Integer id;
     @DatabaseField(unique = true)
-    private String traktId;
+    private Integer traktId;
     @DatabaseField
     private Integer tmdbId;
+    @DatabaseField
+    private Integer tvdbId;
+    @DatabaseField
+    private Integer tvrageId;
+    @DatabaseField
+    String imdbId;
     @DatabaseField(canBeNull = false)
     private int seasonNumber;
     // Foreign key to the series table. Cannot be null.
@@ -32,13 +38,40 @@ public class Season {
     public Season() {
     } // No args constructor for ormlite.
 
-    public Season(Integer tmdbId, String traktId, int seasonNumber, Integer series, String thumbnail, String banner) {
+    public Season(Integer tmdbId, Integer traktId, Integer tvdbId, Integer tvrageId, String imdbId, int seasonNumber, Integer series, String thumbnail, String banner) {
         this.tmdbId = tmdbId;
         this.traktId = traktId;
         this.seasonNumber = seasonNumber;
         this.series = series;
         this.thumbnail = thumbnail;
         this.banner = banner;
+        this.tvdbId = tvdbId;
+        this.tvrageId = tvrageId;
+        this.imdbId = imdbId;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
+    }
+
+    public Integer getTvrageId() {
+        return tvrageId;
+    }
+
+    public void setTvrageId(Integer tvrageId) {
+        this.tvrageId = tvrageId;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public int getSeasonNumber() {
@@ -81,11 +114,11 @@ public class Season {
         this.banner = banner;
     }
 
-    public String getTraktId() {
+    public Integer getTraktId() {
         return traktId;
     }
 
-    public void setTraktId(String traktId) {
+    public void setTraktId(Integer traktId) {
         this.traktId = traktId;
     }
 

@@ -103,7 +103,7 @@ public class FragmentShowOverview extends Fragment {
     private class RetrieveActors extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ShowActors showActors = tvdbService.getShowActors(show.getTmdbId().toString());
+            ShowActors showActors = tvdbService.getShowActors(show.getTvdbId().toString());
 
             for (ShowActorData showActorData : showActors.getData()) {
                 actorList.add(new Actor("http://thetvdb.com/banners/" + showActorData.getImage(), showActorData.getName()));

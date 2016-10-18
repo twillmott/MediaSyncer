@@ -93,7 +93,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 if (series.getNextEpisode() != null) {
                     databaseSeries = seriesDao.queryBuilder().where().eq(Series.TRAKT_ID_COLUMN, series.getTraktId()).queryForFirst();
                     try {
-                        databaseSeries.setNextEpisode(episodeAccessor.getForTraktId(series.getNextEpisode().getTraktId()).getId());
+                        databaseSeries.setNextEpisode(episodeAccessor.getForTraktId(series.getNextEpisode().getTraktId().toString()).getId());
                         seriesDao.update(databaseSeries);
                     } catch (Exception e) {
                         Log.e(LOG_TAG, "Error writing next episode for " + series.getTitle() + " to the database. " + e.getMessage());
@@ -112,6 +112,9 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 model.getTitle(),
                 model.getTraktId(),
                 model.getTmdbId(),
+                model.getTvdbId(),
+                model.getTvrageId(),
+                model.getImdbId(),
                 model.getThumbnailUrl(),
                 model.getBannerUrl(),
                 model.getNextEpisode() == null ? null : model.getNextEpisode().getId(),
@@ -126,6 +129,9 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 dao.getTitle(),
                 dao.getTraktId(),
                 dao.getTmdbId(),
+                dao.getTvdbId(),
+                dao.getTvrageId(),
+                dao.getImdbId(),
                 dao.getSeriesBanner(),
                 dao.getSeriesThumbnail(),
                 dao.getNextEpisode() == null ? null : episodeAccessor.getModelForDao(episodeAccessor.getById(dao.getNextEpisode())), //

@@ -11,7 +11,10 @@ public class Episode {
     Integer id;
     int episodeNumber;
     Integer tmdbId;
-    String traktId;
+    Integer traktId;
+    Integer tvdbId;
+    Integer tvrageId;
+    String imdbId;
     String title;
     String bannerUrl;
     String thumbnailUrl;
@@ -20,7 +23,7 @@ public class Episode {
     public Episode() {
     } //Required for parcel
 
-    public Episode(Integer id, Integer tmdbId, String traktId, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
+    public Episode(Integer id, Integer tmdbId, Integer traktId, Integer tvdbId, Integer tvrageId, String imdbId, String title, int episodeNumber, String bannerUrl, String thumbnailUrl, String overview) {
         this.id = id;
         this.tmdbId = tmdbId;
         this.traktId = traktId;
@@ -29,6 +32,37 @@ public class Episode {
         this.thumbnailUrl = thumbnailUrl;
         this.overview = overview;
         this.title = title;
+        this.tvdbId = tvdbId;
+        this.tvrageId = tvrageId;
+        this.imdbId = imdbId;
+    }
+
+    public void setTmdbId(Integer tmdbId) {
+        this.tmdbId = tmdbId;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
+    }
+
+    public Integer getTvrageId() {
+        return tvrageId;
+    }
+
+    public void setTvrageId(Integer tvrageId) {
+        this.tvrageId = tvrageId;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public Integer getId() {
@@ -79,15 +113,11 @@ public class Episode {
         return tmdbId;
     }
 
-    public void setTmdbId(int tmdbId) {
-        this.tmdbId = tmdbId;
-    }
-
-    public String getTraktId() {
+    public Integer getTraktId() {
         return traktId;
     }
 
-    public void setTraktId(String traktId) {
+    public void setTraktId(Integer traktId) {
         this.traktId = traktId;
     }
 }

@@ -14,8 +14,11 @@ public class Series {
 
     Integer id;
     String title;
-    String traktId;
+    Integer traktId;
     Integer tmdbId;
+    Integer tvdbId;
+    Integer tvrageId;
+    String imdbId;
     String bannerUrl;
     String thumbnailUrl;
     Episode nextEpisode;
@@ -25,7 +28,7 @@ public class Series {
     public Series() {
     } // Required for parceler.
 
-    public Series(Integer id, String title, String traktId, Integer tmdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
+    public Series(Integer id, String title, Integer traktId, Integer tmdbId, Integer tvdbId, Integer tvrageId, String imdbId, String bannerUrl, String thumbnailUrl, Episode nextEpisode, List<Season> seasons, String overview) {
         this.id = id;
         this.title = title;
         this.traktId = traktId;
@@ -35,6 +38,33 @@ public class Series {
         this.nextEpisode = nextEpisode;
         this.seasons = seasons;
         this.overview = overview;
+        this.tvdbId = tvdbId;
+        this.tvrageId = tvrageId;
+        this.imdbId = imdbId;
+    }
+
+    public Integer getTvdbId() {
+        return tvdbId;
+    }
+
+    public void setTvdbId(Integer tvdbId) {
+        this.tvdbId = tvdbId;
+    }
+
+    public Integer getTvrageId() {
+        return tvrageId;
+    }
+
+    public void setTvrageId(Integer tvrageId) {
+        this.tvrageId = tvrageId;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public int getId() {
@@ -49,11 +79,11 @@ public class Series {
         this.title = title;
     }
 
-    public String getTraktId() {
+    public Integer getTraktId() {
         return traktId;
     }
 
-    public void setTraktId(String traktId) {
+    public void setTraktId(Integer traktId) {
         this.traktId = traktId;
     }
 
