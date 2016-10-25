@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.uwetrottmann.tmdb2.Tmdb;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
@@ -378,9 +379,9 @@ public class TraktService {
                 episode.overview);
     }
 
-    public void getAllShows(Context context) {
+    public void getAllShows(Context context, RefreshCompleteListener refreshCompleteListener) {
         try {
-            new RefreshFullTvDatabase().execute(context);
+            new RefreshFullTvDatabase(context, refreshCompleteListener).execute();
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error loading all shows from trakt" + e.getMessage());
         }
@@ -407,10 +408,18 @@ public class TraktService {
     }
 
 
-    private class RefreshFullTvDatabase extends AsyncTask<Context, Void, Void> {
+    private class RefreshFullTvDatabase extends AsyncTask<Void, Void, String> {
+
+        RefreshCompleteListener refreshCompleteListener;
+        Context context;
+
+        public RefreshFullTvDatabase(Context context, RefreshCompleteListener refreshCompleteListener) {
+            this.refreshCompleteListener = refreshCompleteListener;
+            this.context = context;
+        }
 
         @Override
-        protected Void doInBackground(Context... params) {
+        protected String doInBackground(Void... params) {
 
             // Get all of the users shows, with the minimum information.
             // Get the users watchlist
@@ -432,16 +441,16 @@ public class TraktService {
                 BaseShow fullShow = combineBaseShows(traktShow, getShowWatchedProgress(traktShow.show.ids.trakt.toString()));
 
                 // Get all of the seasons for the show
-                List<com.uwetrottmann.trakt5.entities.Season> traketSeasons = new ArrayList<>();
+                List<com.uwetrottmann.trakt5.entities.Season> traktSeasons = new ArrayList<>();
                 try {
-                    traketSeasons = getTrakt().seasons().summary(traktShow.show.ids.trakt.toString(), Extended.FULLIMAGES).execute().body();
+                    traktSeasons = getTrakt().seasons().summary(traktShow.show.ids.trakt.toString(), Extended.FULLIMAGES).execute().body();
                 } catch (Exception e) {
                     Log.e("Trakt", e.getMessage());
                 }
 
                 List<Season> seasonModels = new ArrayList<>();
                 // Go through each season and get its episodes
-                for (com.uwetrottmann.trakt5.entities.Season traktSeason : traketSeasons) {
+                for (com.uwetrottmann.trakt5.entities.Season traktSeason : traktSeasons) {
                     List<Episode> traktEpisodes = new ArrayList<>();
                     try {
                         traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.FULLIMAGES).execute().body();
@@ -459,9 +468,18 @@ public class TraktService {
 
                 showModels.add(baseShowToSeries(fullShow, seasonModels));
             }
-            SeriesAccessor accessor = new SeriesAccessor(params[0]);
+
+            TmdbService tmdbService = new TmdbService();
+            showModels = tmdbService.updateSeriesInfo(showModels);
+
+            SeriesAccessor accessor = new SeriesAccessor(context);
             accessor.writeAllSeriesToDatabase(showModels);
-            return null;
+            return "success";
+        }
+
+        @Override
+        protected void onPostExecute(String string) {
+            refreshCompleteListener.refreshComplete(string);
         }
     }
 }

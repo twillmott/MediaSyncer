@@ -29,13 +29,14 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.model.Series;
+import uk.org.willmott.mediasyncer.service.RefreshCompleteListener;
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.LibraryAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FragmentLibrary extends Fragment {
+public class FragmentLibrary extends Fragment implements RefreshCompleteListener {
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -123,11 +124,19 @@ public class FragmentLibrary extends Fragment {
             // Start the progress spinner spinning.
             refresh.setActionView(R.layout.actionbar_indeterminate_progress);
             // Refresh the data list.
-            getTraktService().getAllShows(getContext());
-            // Stop the refresh button spinner.
-            refresh.setActionView(null);
+            getTraktService().getAllShows(getContext(), this);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void refreshComplete(String result) {
+        // Stop the refresh button spinner.
+        refresh.setActionView(null);
+        // Update the results
+        showsList.clear();
+        showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
+        libraryAdapter.notifyDataSetChanged();
     }
 }
