@@ -426,19 +426,22 @@ public class TraktService {
                 List<Season> seasonModels = new ArrayList<>();
                 // Go through each season and get its episodes
                 for (com.uwetrottmann.trakt5.entities.Season traktSeason : traktSeasons) {
-                    List<Episode> traktEpisodes = new ArrayList<>();
-                    try {
-                        traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.DEFAULT_MIN).execute().body();
-                    } catch (Exception e) {
-                        Log.e("Trakt", e.getMessage());
-                    }
+                    if (traktSeason.number != 0) {
 
-                    List<uk.org.willmott.mediasyncer.model.Episode> episodeModels = new ArrayList<>();
-                    for (Episode traktEpisode : traktEpisodes) {
-                        episodeModels.add(episodeMapper(traktEpisode));
-                    }
+                        List<Episode> traktEpisodes = new ArrayList<>();
+                        try {
+                            traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.DEFAULT_MIN).execute().body();
+                        } catch (Exception e) {
+                            Log.e("Trakt", e.getMessage());
+                        }
 
-                    seasonModels.add(seasonMapper(traktSeason, episodeModels));
+                        List<uk.org.willmott.mediasyncer.model.Episode> episodeModels = new ArrayList<>();
+                        for (Episode traktEpisode : traktEpisodes) {
+                            episodeModels.add(episodeMapper(traktEpisode));
+                        }
+
+                        seasonModels.add(seasonMapper(traktSeason, episodeModels));
+                    }
                 }
 
                 showModels.add(baseShowToSeries(fullShow, seasonModels));
