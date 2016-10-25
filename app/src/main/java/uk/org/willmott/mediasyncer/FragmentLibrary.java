@@ -138,5 +138,8 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
         showsList.clear();
         showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
         libraryAdapter.notifyDataSetChanged();
+
+        // Tell the user we've finished updating
+        Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
     }
 }

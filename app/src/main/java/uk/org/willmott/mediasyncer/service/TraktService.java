@@ -143,7 +143,7 @@ public class TraktService {
      */
     public List<BaseShow> getShowWatchlist() {
         try {
-            Response<List<BaseShow>> response = trakt.users().watchlistShows(Username.ME, Extended.IMAGES).execute();
+            Response<List<BaseShow>> response = trakt.users().watchlistShows(Username.ME, Extended.DEFAULT_MIN).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
@@ -160,7 +160,7 @@ public class TraktService {
      */
     public List<BaseShow> getShowWatched() {
         try {
-            Response<List<BaseShow>> response = trakt.users().watchedShows(Username.ME, Extended.IMAGES).execute();
+            Response<List<BaseShow>> response = trakt.users().watchedShows(Username.ME, Extended.DEFAULT_MIN).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
@@ -177,7 +177,7 @@ public class TraktService {
      */
     public List<BaseShow> getShowCollection() {
         try {
-            Response<List<BaseShow>> response = trakt.users().collectionShows(Username.ME, Extended.IMAGES).execute();
+            Response<List<BaseShow>> response = trakt.users().collectionShows(Username.ME, Extended.DEFAULT_MIN).execute();
             if (response.isSuccessful()) {
                 return response.body();
             }
@@ -302,16 +302,6 @@ public class TraktService {
 
 
     private Series baseShowToSeries(BaseShow baseShow, List<Season> seasons) {
-
-        String thumb = null;
-        if (baseShow.show.images.poster != null) {
-            thumb = baseShow.show.images.poster.thumb;
-        }
-        String banner = null;
-        if (baseShow.show.images.thumb != null) {
-            banner = baseShow.show.images.thumb.full;
-        }
-
         return new Series(
                 null,
                 baseShow.show.title,
@@ -320,25 +310,15 @@ public class TraktService {
                 baseShow.show.ids.tvdb,
                 baseShow.show.ids.tvrage,
                 baseShow.show.ids.imdb,
-                banner,
-                thumb,
+                null,
+                null,
                 episodeMapper(baseShow.next_episode),
                 seasons,
-                baseShow.show.overview);
+                null);
     }
 
 
     private Season seasonMapper(com.uwetrottmann.trakt5.entities.Season season, List<uk.org.willmott.mediasyncer.model.Episode> episodes) {
-
-        String thumb = null;
-        if (season.images.poster != null) {
-            thumb = season.images.poster.medium;
-        }
-        String banner = null;
-        if (season.images.thumb != null) {
-            banner = season.images.thumb.full;
-        }
-
         return new Season(
                 null,
                 season.ids.tmdb,
@@ -347,22 +327,17 @@ public class TraktService {
                 season.ids.tvrage,
                 null,
                 season.number,
-                banner,
-                thumb,
+                null,
+                null,
                 episodes);
     }
 
 
     private uk.org.willmott.mediasyncer.model.Episode episodeMapper(Episode episode) {
 
+        // Episode can be null when the series mapper is trying to load the next episode.
         if (episode == null) {
             return null;
-        }
-        String thumb = null;
-        String banner = null;
-        if (episode.images.screenshot != null) {
-            thumb = episode.images.screenshot.medium;
-            banner = episode.images.screenshot.full;
         }
 
         return new uk.org.willmott.mediasyncer.model.Episode(
@@ -374,9 +349,9 @@ public class TraktService {
                 episode.ids.imdb,
                 episode.title,
                 episode.number,
-                banner,
-                thumb,
-                episode.overview);
+                null,
+                null,
+                null);
     }
 
     public void getAllShows(Context context, RefreshCompleteListener refreshCompleteListener) {
@@ -443,7 +418,7 @@ public class TraktService {
                 // Get all of the seasons for the show
                 List<com.uwetrottmann.trakt5.entities.Season> traktSeasons = new ArrayList<>();
                 try {
-                    traktSeasons = getTrakt().seasons().summary(traktShow.show.ids.trakt.toString(), Extended.FULLIMAGES).execute().body();
+                    traktSeasons = getTrakt().seasons().summary(traktShow.show.ids.trakt.toString(), Extended.DEFAULT_MIN).execute().body();
                 } catch (Exception e) {
                     Log.e("Trakt", e.getMessage());
                 }
@@ -453,7 +428,7 @@ public class TraktService {
                 for (com.uwetrottmann.trakt5.entities.Season traktSeason : traktSeasons) {
                     List<Episode> traktEpisodes = new ArrayList<>();
                     try {
-                        traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.FULLIMAGES).execute().body();
+                        traktEpisodes = getTrakt().seasons().season(traktShow.show.ids.trakt.toString(), traktSeason.number, Extended.DEFAULT_MIN).execute().body();
                     } catch (Exception e) {
                         Log.e("Trakt", e.getMessage());
                     }
@@ -474,7 +449,7 @@ public class TraktService {
 
             SeriesAccessor accessor = new SeriesAccessor(context);
             accessor.writeAllSeriesToDatabase(showModels);
-            return "success";
+            return "Database successfully updated and refreshed with " + showModels.size() + " series.";
         }
 
         @Override
