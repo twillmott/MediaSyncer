@@ -105,7 +105,7 @@ public class FragmentShowOverview extends Fragment {
         protected Void doInBackground(Void... params) {
             ShowActors showActors = tvdbService.getShowActors(show.getTvdbId().toString());
 
-            if (showActors == null) {
+            if (showActors.getData() == null) {
                 return null;
             }
 
