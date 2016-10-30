@@ -34,6 +34,8 @@ public class Series {
     private Integer nextEpisode;
     @DatabaseField
     private String overview;
+    @DatabaseField
+    Long lastTmdbUpdate;
 
     public Series() {
     } // No args constructor for ormlite
@@ -137,5 +139,14 @@ public class Series {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }

@@ -19,6 +19,7 @@ public class Season {
     String bannerUrl;
     String thumbnailUrl;
     List<Episode> episodes;
+    Long lastTmdbUpdate;
 
     public Season() {
     } // Required for parceler
@@ -111,5 +112,13 @@ public class Season {
 
     public void setTraktId(Integer traktId) {
         this.traktId = traktId;
+    }
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }

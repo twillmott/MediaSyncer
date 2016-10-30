@@ -1,17 +1,26 @@
 package uk.org.willmott.mediasyncer.service;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.uwetrottmann.tmdb2.Tmdb;
 import com.uwetrottmann.tmdb2.entities.FindResults;
 import com.uwetrottmann.tmdb2.entities.TvEpisode;
+import com.uwetrottmann.tmdb2.entities.TvResultsPage;
 import com.uwetrottmann.tmdb2.entities.TvSeason;
 import com.uwetrottmann.tmdb2.entities.TvShowComplete;
 import com.uwetrottmann.tmdb2.enumerations.ExternalSource;
 
 import java.util.List;
+import java.util.Map;
 
+import retrofit2.Call;
 import retrofit2.Response;
+import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.Episode;
 import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.model.Series;
@@ -27,144 +36,196 @@ public class TmdbService {
     private Tmdb tmdb = new Tmdb("5475520bdcb65a7d746b9a582cad6ccf");
 
     /**
-     * Updates a list of series information with TMDB data.
+     * Updates a single series with TMDB data.
      */
-    public List<Series> updateSeriesInfo(List<Series> serieses) {
+    private Series updateSeriesInfo(Series series) {
 
-        for (Series series : serieses) {
+        TvShowComplete tvShow;
 
-            TvShowComplete tvShow;
-
-            // If tmdb id is blank. We need to find the show from another id.
-            try {
-                if (series.getTmdbId() == null || series.getTmdbId() == 0) {
-                    FindResults findResults = null;
-                    if (series.getImdbId() != null && !series.getImdbId().equals("")) {
-                        findResults = tmdb.findService().find(series.getImdbId(), ExternalSource.IMDB_ID, "en").execute().body();
-                    }
-                    if (series.getTvrageId() != null && series.getTvrageId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
-                        findResults = tmdb.findService().find(series.getTvrageId().toString(), ExternalSource.IMDB_ID, "en").execute().body();
-                    }
-                    if (series.getTvdbId() != null && series.getTvdbId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
-                        findResults = tmdb.findService().find(series.getTvdbId().toString(), ExternalSource.IMDB_ID, "en").execute().body();
-                    }
-                    if ((findResults == null || findResults.tv_results.isEmpty())) {
-                        series.setTmdbId(tmdb.searchService().tv(series.getTitle(), 1, "en", null, null).execute().body().results.get(0).id);
-                    } else {
-                        series.setTmdbId(findResults.tv_results.get(0).id);
-                    }
+        // If tmdb id is blank. We need to find the show from another id.
+        try {
+            if (series.getTmdbId() == null || series.getTmdbId() == 0) {
+                FindResults findResults = null;
+                if (series.getImdbId() != null && !series.getImdbId().equals("")) {
+                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getImdbId(), ExternalSource.IMDB_ID, "en"), findResults);
                 }
-
-                tvShow = tmdb.tvService().tv(series.getTmdbId(), "en", null).execute().body();
-
-                series.setOverview(tvShow.overview); // Override the overview.
-                series.setThumbnailUrl("http://image.tmdb.org/t/p/w154" + tvShow.poster_path);
-                series.setBannerUrl("http://image.tmdb.org/t/p/w600" + tvShow.backdrop_path);
-
-                // Update all the series seasons
-                series.setSeasons(updateSeasonInfo(series.getSeasons(), series));
-
-            } catch (Exception e) {
-                Log.w(LOGTAG, "Unable to find any results for " + series.getTitle());
+                if (series.getTvrageId() != null && series.getTvrageId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
+                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvrageId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
+                }
+                if (series.getTvdbId() != null && series.getTvdbId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
+                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvdbId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
+                }
+                if ((findResults == null || findResults.tv_results.isEmpty())) {
+                    TvResultsPage tvResultsPage = (TvResultsPage) (callTMDBAPI(tmdb.searchService().tv(series.getTitle(), 1, "en", null, null), new TvResultsPage()));
+                    series.setTmdbId(tvResultsPage.results.get(0).id); // We want a NPE to be thrown
+                } else {
+                    series.setTmdbId(findResults.tv_results.get(0).id);
+                }
             }
+
+            // Get the complete show details.
+            tvShow = (TvShowComplete) callTMDBAPI(tmdb.tvService().tv(series.getTmdbId(), "en", null), new TvShowComplete());
+
+            // Populate the model
+            series.setOverview(tvShow.overview);
+            series.setThumbnailUrl("http://image.tmdb.org/t/p/w500" + tvShow.poster_path);
+            series.setBannerUrl("http://image.tmdb.org/t/p/w600" + tvShow.backdrop_path);
+            series.setLastTmdbUpdate(System.currentTimeMillis());
+
+            // Update all the series seasons
+            series.setSeasons(updateSeasonInfo(series.getSeasons(), tvShow));
+
+        } catch (Exception e) {
+            Log.w(LOGTAG, "Unable to find any results for " + series.getTitle() + " " + e.getMessage());
         }
-        return serieses;
+        return series;
     }
+
 
     /**
      * Updates a list of seasons with TMDB data. All seasons must belong to the same series.
      */
-    public List<Season> updateSeasonInfo(List<Season> seasons, Series series) {
+    private List<Season> updateSeasonInfo(List<Season> seasons, TvShowComplete series) {
 
-        if (series.getTmdbId() == null || series.getTmdbId() == 0) {
-            Log.w(LOGTAG, "No tmdb ID for " + series.getTitle() + ", therefore season information can't be attained.");
-            return seasons;
-        }
+        // Get a map of the supported seasons and season numbers (java8replace)
+        Map<Integer, TvSeason> supportedSeasons = Maps.uniqueIndex(series.seasons, new Function<TvSeason, Integer>() {
+            @Override
+            public Integer apply(TvSeason input) {
+                return input.season_number;
+            }
+        });
 
         for (Season season : seasons) {
 
-            TvSeason tvSeason = null;
+            // Check that TMDB actually has this season (for some reason it only has certain seasons for some TV shows.
+            if (supportedSeasons.get(season.getSeasonNumber()) == null) {
+                Log.i(LOGTAG, "TMDB does not include information for " + series.name + " Season " + season.getSeasonNumber() + ". Skipping this entry.");
+                continue;
+            }
 
-            // If tmdb id is blank. We need to find the season from another id.
-            try {
-                if (season.getTmdbId() == null || season.getTmdbId() == 0) {
-                    // Get the TV Show from tmdb and then get the ID from the seasons
-                    season.setTmdbId(tmdb.tvService().tv(series.getTmdbId(), "en", null).execute().body().seasons.get(season.getSeasonNumber() - 1).id);
-                }
+            season.setTmdbId(supportedSeasons.get(season.getSeasonNumber()).id);
 
-                Response<TvSeason> response = tmdb.tvSeasonsService().season(series.getTmdbId(), season.getSeasonNumber(), "en", null).execute();
-                if (response.isSuccessful()) {
-                    tvSeason = response.body();
-                } else {
-                    String responseError = response.errorBody().string();
-                    if (responseError.contains("Your request count")) {
-                        // We're only allowed 40 api calls every 10 seconds. So sleep for a bit.
-                        Thread.sleep(10000);
+            // Unfortunately the season that we got from the tv show doesn't contain all info. So get
+            // it again from the API.
+            TvSeason tvSeason = (TvSeason) callTMDBAPI(tmdb.tvSeasonsService().season(series.id, season.getSeasonNumber(), "en", null), new TvSeason());
+            ;
 
-                        Response<TvSeason> response = tmdb.tvSeasonsService().season(series.getTmdbId(), season.getSeasonNumber(), "en", null).execute();
-                        if (response.isSuccessful()) {
-                            tvSeason = response.body();
-                        } else {
-                            String responseError1 = response.errorBody().string();
-                            if (responseError.contains("Your request count")) {
-
-                            }
-                        }
-
-                    }
-                }
-
-                if (tvSeason != null) {
+            if (tvSeason == null) {
+                Log.w(LOGTAG, "Unable to find any results for " + series.id + " Season " + Integer.toString(season.getSeasonNumber()));
+            } else {
 //                season.setOverview(tvSeason.overview); // Override the overview.
-                    season.setThumbnailUrl(tvSeason.poster_path == null ? null : "http://image.tmdb.org/t/p/w154" + tvSeason.poster_path);
+                season.setThumbnailUrl(tvSeason.poster_path == null ? null : "http://image.tmdb.org/t/p/w500" + tvSeason.poster_path);
 //                season.setBannerUrl(); // TMDB doesn't provide season banners.
+                season.setLastTmdbUpdate(System.currentTimeMillis());
 
-                    // Now update all of the episodes
-                } else {
-                    Log.w(LOGTAG, "Unable to find any results for " + series.getTitle() + " Season " + Integer.toString(season.getSeasonNumber()));
-                }
-
-
-            } catch (Exception e) {
-                Log.w(LOGTAG, "Unable to find any results for " + series.getTitle() + " Season " + Integer.toString(season.getSeasonNumber()));
+                // Now update all of the episodes
+                season.setEpisodes(updateEpisodeInfo(season.getEpisodes(), tvSeason, series.name));
             }
         }
         return seasons;
     }
 
-    private void getTmdbSeason() {
-
-    }
 
     /**
-     * Updates a list of episodes with TMDB data. All episodes must belong to the same series and seson.
+     * Updates a list of episodes with TMDB data. All episodes must belong to the same supplied season.
      */
-    public List<Episode> updateEpisodeInfo(List<Episode> episodes, Series series, Season season) {
+    private List<Episode> updateEpisodeInfo(List<Episode> episodes, TvSeason season, String seriesName) {
 
-        if (series.getTmdbId() == null || series.getTmdbId() == 0) {
-            Log.w(LOGTAG, "No tmdb ID for " + series.getTitle() + ", therefore episode information can't be attained.");
-            return episodes;
-        }
+        // Get a map of the supported seasons and season numbers (java8replace)
+        Map<Integer, TvEpisode> supportedEpisodes = Maps.uniqueIndex(season.episodes, new Function<TvEpisode, Integer>() {
+            @Override
+            public Integer apply(TvEpisode input) {
+                return input.episode_number;
+            }
+        });
 
         for (Episode episode : episodes) {
 
-            TvEpisode tvEpisode = null;
-
-            // If tmdb id is blank. We need to find the season from another id.
-            try {
-                if (episode.getTmdbId() == null || episode.getTmdbId() == 0) {
-                    // Get the TV Show from tmdb and then get the ID from the seasons
-                    tvEpisode = tmdb.tvSeasonsService().season(series.getTmdbId(), season.getSeasonNumber(), "en", null).execute().body().episodes.get(episode.getEpisodeNumber() - 1);
-                } else {
-                    tvEpisode = tmdb.tvEpisodesService().episode(series.getTmdbId(), season.getSeasonNumber(), episode.getEpisodeNumber(), "en", null).execute().body();
-                }
-                episode.setOverview(tvEpisode.overview);
-                episode.setThumbnailUrl("http://image.tmdb.org/t/p/w154" + tvEpisode.still_path);
-                episode.setBannerUrl("http://image.tmdb.org/t/p/w600" + tvEpisode.still_path);
-            } catch (Exception e) {
-                Log.w(LOGTAG, "Unable to find any results for " + series.getTitle() + " Season " + Integer.toString(season.getSeasonNumber()) + " Episode " + Integer.toString(episode.getEpisodeNumber()));
+            // Check that TMDB actually has this season (for some reason it only has certain seasons for some TV shows.
+            if (supportedEpisodes.get(episode.getEpisodeNumber()) == null) {
+                Log.i(LOGTAG, "TMDB does not include information for " + seriesName
+                        + " Season " + season.season_number
+                        + " Episode " + episode.getEpisodeNumber() + ". Skipping this entry.");
+                continue;
             }
+
+            TvEpisode tvEpisode = supportedEpisodes.get(episode.getEpisodeNumber());
+
+            // Fortunately the episode that we got from the tmdb season DOES contain all info. So
+            // there is no need to call the API again.
+            episode.setTmdbId(tvEpisode.id);
+            episode.setOverview(tvEpisode.overview); // Override the overview.
+            episode.setThumbnailUrl(tvEpisode.still_path == null ? null : "http://image.tmdb.org/t/p/original" + tvEpisode.still_path);
+            episode.setBannerUrl(tvEpisode.still_path == null ? null : "http://image.tmdb.org/t/p/original" + tvEpisode.still_path);
+            episode.setLastTmdbUpdate(System.currentTimeMillis());
         }
         return episodes;
+    }
+
+
+    /**
+     * Pass in the call so that the 40 calls per second limit is handled.
+     */
+    private Object callTMDBAPI(Call call, Object returnObject) {
+        Response response = null;
+        try {
+            response = call.execute();
+        } catch (Exception e) {
+            Log.e(LOGTAG, "Error calling TMDB database with exception: " + e.getMessage());
+            return returnObject;
+        }
+
+        if (response.isSuccessful()) {
+            return response.body();
+        } else {
+            if (response.code() == 429) { // Error code for more than 40 calls per second.
+                try {
+                    Log.i(LOGTAG, "TMDB api limit reached, waiting " + response.headers().get("Retry-After") + " seconds.");
+                    Thread.sleep(Integer.parseInt(response.headers().get("Retry-After")) * 1050);
+                } catch (InterruptedException e) {
+                    Log.e(LOGTAG, "Error waiting for TMDB service");
+                    return returnObject;
+                }
+                return callTMDBAPI(call.clone(), returnObject);
+            } else {
+                Log.e(LOGTAG, "Error calling the TMDB service with error code:" + response.code());
+                return returnObject;
+            }
+        }
+    }
+
+    public void populateBlankShows(Context context, RefreshCompleteListener refreshCompleteListener) {
+        try {
+            new UpdateAllSeriesInDB(context, refreshCompleteListener).execute();
+        } catch (Exception e) {
+            Log.e(LOGTAG, "Error" + e.getMessage());
+        }
+    }
+
+    private class UpdateAllSeriesInDB extends AsyncTask<Void, Void, String> {
+
+        RefreshCompleteListener refreshCompleteListener;
+        Context context;
+
+        public UpdateAllSeriesInDB(Context context, RefreshCompleteListener refreshCompleteListener) {
+            this.refreshCompleteListener = refreshCompleteListener;
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            SeriesAccessor accessor = new SeriesAccessor(context);
+            int i = 0;
+            for (Series series : accessor.getAllUnfilledTMDBSeries()) {
+                accessor.writeAllSeriesToDatabase(Lists.newArrayList(updateSeriesInfo(series)));
+                i++;
+            }
+            return "TMDB service successfully updated " + i + "series";
+        }
+
+        @Override
+        protected void onPostExecute(String string) {
+            refreshCompleteListener.refreshComplete(string);
+        }
     }
 }

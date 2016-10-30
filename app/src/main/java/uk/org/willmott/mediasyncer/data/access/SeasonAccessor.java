@@ -98,7 +98,7 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
 
     @Override
     public Season getDaoForModel(uk.org.willmott.mediasyncer.model.Season model) {
-        return new Season(
+        Season season = new Season(
                 model.getTmdbId(),
                 model.getTraktId(),
                 model.getTvdbId(),
@@ -108,11 +108,14 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
                 null,
                 model.getThumbnailUrl(),
                 model.getBannerUrl());
+        season.setLastTmdbUpdate(model.getLastTmdbUpdate());
+
+        return season;
     }
 
     @Override
     public uk.org.willmott.mediasyncer.model.Season getModelForDao(Season dao) {
-        return new uk.org.willmott.mediasyncer.model.Season(
+        uk.org.willmott.mediasyncer.model.Season season = new uk.org.willmott.mediasyncer.model.Season(
                 dao.getId(),
                 dao.getTmdbId(),
                 dao.getTraktId(),
@@ -123,5 +126,8 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
                 dao.getBanner(),
                 dao.getThumbnail(),
                 episodeAccessor.getEpisodesForSeason(dao)); // List of episodes
+        season.setLastTmdbUpdate(dao.getLastTmdbUpdate());
+
+        return season;
     }
 }

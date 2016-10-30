@@ -447,12 +447,10 @@ public class TraktService {
                 showModels.add(baseShowToSeries(fullShow, seasonModels));
             }
 
-            TmdbService tmdbService = new TmdbService();
-            showModels = tmdbService.updateSeriesInfo(showModels);
-
             SeriesAccessor accessor = new SeriesAccessor(context);
             accessor.writeAllSeriesToDatabase(showModels);
-            return "Database successfully updated and refreshed with " + showModels.size() + " series.";
+
+            return "Trakt service successfully grabbed " + showModels.size() + " series.";
         }
 
         @Override

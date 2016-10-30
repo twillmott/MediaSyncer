@@ -35,6 +35,8 @@ public class Episode {
     private String bannerUrl;
     @DatabaseField
     private String thumbnailUrl;
+    @DatabaseField
+    Long lastTmdbUpdate;
 
     public Episode() {
     } // Required by ormlite.
@@ -147,5 +149,13 @@ public class Episode {
 
     public void setTmdbId(Integer tmdbId) {
         this.tmdbId = tmdbId;
+    }
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }

@@ -8,7 +8,6 @@ package uk.org.willmott.mediasyncer;
  * Created by tomwi on 05/09/2016.
  */
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,8 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.uwetrottmann.trakt5.entities.BaseShow;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +27,7 @@ import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.ContentType;
 import uk.org.willmott.mediasyncer.model.Series;
 import uk.org.willmott.mediasyncer.service.RefreshCompleteListener;
+import uk.org.willmott.mediasyncer.service.TmdbService;
 import uk.org.willmott.mediasyncer.service.TraktService;
 import uk.org.willmott.mediasyncer.ui.LibraryAdapter;
 
@@ -50,6 +48,7 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
     private List<Series> showsList = new ArrayList<>();
     // The refresh button in the action bar.
     private MenuItem refresh;
+    private MenuItem refresh2;
     // The adapter used to display the listing results.
     LibraryAdapter libraryAdapter;
 
@@ -111,6 +110,7 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_library, menu);
         refresh = menu.findItem(R.id.action_refresh);
+        refresh = menu.findItem(R.id.refresh2);
     }
 
     // Set up the handling of the action bar buttons that we've added to this fragment.
@@ -127,19 +127,38 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
             getTraktService().getAllShows(getContext(), this);
             return true;
         }
+
+        if (id == R.id.refresh2) {
+            TmdbService tmdbService = new TmdbService();
+            tmdbService.populateBlankShows(getContext(), this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void refreshComplete(String result) {
-        // Stop the refresh button spinner.
-        refresh.setActionView(null);
-        // Update the results
-        showsList.clear();
-        showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
-        libraryAdapter.notifyDataSetChanged();
 
-        // Tell the user we've finished updating
-        Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+        if (result.contains("Trakt")) {
+            // Stop the refresh button spinner.
+            refresh.setActionView(null);
+            // Update the results
+            showsList.clear();
+            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
+            libraryAdapter.notifyDataSetChanged();
+
+            // Tell the user we've finished updating
+            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+
+        } else if (result.contains("TMDB")) {
+
+            // Update the results
+            showsList.clear();
+            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
+            libraryAdapter.notifyDataSetChanged();
+
+            // Tell the user we've finished updating
+            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+        }
     }
 }

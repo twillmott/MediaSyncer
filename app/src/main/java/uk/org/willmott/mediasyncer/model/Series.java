@@ -24,6 +24,7 @@ public class Series {
     Episode nextEpisode;
     List<Season> seasons;
     String overview;
+    Long lastTmdbUpdate;
 
     public Series() {
     } // Required for parceler.
@@ -133,5 +134,13 @@ public class Series {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }

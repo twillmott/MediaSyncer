@@ -19,6 +19,7 @@ public class Episode {
     String bannerUrl;
     String thumbnailUrl;
     String overview;
+    Long lastTmdbUpdate;
 
     public Episode() {
     } //Required for parcel
@@ -119,5 +120,13 @@ public class Episode {
 
     public void setTraktId(Integer traktId) {
         this.traktId = traktId;
+    }
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }

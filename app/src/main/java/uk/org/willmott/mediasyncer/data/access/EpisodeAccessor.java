@@ -104,7 +104,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
 
     @Override
     public Episode getDaoForModel(uk.org.willmott.mediasyncer.model.Episode model) {
-        return new Episode(
+        Episode episode = new Episode(
                 model.getTmdbId(),
                 model.getTraktId(),
                 model.getTvdbId(),
@@ -117,11 +117,14 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
                 model.getBannerUrl(),
                 model.getThumbnailUrl()
         );
+        episode.setLastTmdbUpdate(model.getLastTmdbUpdate());
+
+        return episode;
     }
 
     @Override
     public uk.org.willmott.mediasyncer.model.Episode getModelForDao(Episode dao) {
-        return new uk.org.willmott.mediasyncer.model.Episode(
+        uk.org.willmott.mediasyncer.model.Episode episode = new uk.org.willmott.mediasyncer.model.Episode(
                 dao.getId(),
                 dao.getTmdbId(),
                 dao.getTraktId(),
@@ -134,5 +137,8 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
                 dao.getThumbnailUrl(),
                 dao.getOverview()
         );
+        episode.setLastTmdbUpdate(dao.getLastTmdbUpdate());
+
+        return episode;
     }
 }

@@ -62,6 +62,24 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
         }
     }
 
+    /**
+     * Get all series's data from the database including seasons and episodes that have not been
+     * updated by the TMDB api.
+     */
+    public List<uk.org.willmott.mediasyncer.model.Series> getAllUnfilledTMDBSeries() {
+        try {
+            List<uk.org.willmott.mediasyncer.model.Series> seriesModelList = new ArrayList<>();
+            for (Series series : seriesDao.queryBuilder().where().isNull("lastTmdbUpdate").query()) {
+                seriesModelList.add(getModelForDao(series));
+            }
+            return seriesModelList;
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, e.getMessage());
+            return null;
+        }
+    }
+
+
 
     /**
      * Writes a list of series models (including seasons and episodes) to the databse.
@@ -108,7 +126,7 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
 
     @Override
     public Series getDaoForModel(uk.org.willmott.mediasyncer.model.Series model) {
-        return new Series(
+        Series series = new Series(
                 model.getTitle(),
                 model.getTraktId(),
                 model.getTmdbId(),
@@ -120,11 +138,14 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 model.getNextEpisode() == null ? null : model.getNextEpisode().getId(),
                 model.getOverview()
         );
+        series.setLastTmdbUpdate(model.getLastTmdbUpdate());
+
+        return series;
     }
 
     @Override
     public uk.org.willmott.mediasyncer.model.Series getModelForDao(Series dao) {
-        return new uk.org.willmott.mediasyncer.model.Series(
+        uk.org.willmott.mediasyncer.model.Series series = new uk.org.willmott.mediasyncer.model.Series(
                 dao.getId(),
                 dao.getTitle(),
                 dao.getTraktId(),
@@ -138,5 +159,8 @@ public class SeriesAccessor implements Accessor<Series, uk.org.willmott.mediasyn
                 seasonAccessor.getSeasonsForSeries(dao),
                 dao.getOverview()
         );
+        series.setLastTmdbUpdate(dao.getLastTmdbUpdate());
+
+        return series;
     }
 }

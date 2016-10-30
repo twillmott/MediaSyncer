@@ -33,6 +33,8 @@ public class Season {
     private String thumbnail;
     @DatabaseField
     private String banner;
+    @DatabaseField
+    Long lastTmdbUpdate;
 
 
     public Season() {
@@ -128,5 +130,14 @@ public class Season {
 
     public void setTmdbId(Integer tmdbId) {
         this.tmdbId = tmdbId;
+    }
+
+
+    public Long getLastTmdbUpdate() {
+        return lastTmdbUpdate;
+    }
+
+    public void setLastTmdbUpdate(Long lastTmdbUpdate) {
+        this.lastTmdbUpdate = lastTmdbUpdate;
     }
 }
