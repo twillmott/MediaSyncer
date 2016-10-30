@@ -38,28 +38,30 @@ public class TmdbService {
     /**
      * Updates a single series with TMDB data.
      */
-    private Series updateSeriesInfo(Series series) {
+    public Series updateSeriesInfo(Series series) {
 
         TvShowComplete tvShow;
 
         // If tmdb id is blank. We need to find the show from another id.
         try {
             if (series.getTmdbId() == null || series.getTmdbId() == 0) {
-                FindResults findResults = null;
-                if (series.getImdbId() != null && !series.getImdbId().equals("")) {
-                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getImdbId(), ExternalSource.IMDB_ID, "en"), findResults);
-                }
-                if (series.getTvrageId() != null && series.getTvrageId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
-                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvrageId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
-                }
-                if (series.getTvdbId() != null && series.getTvdbId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
-                    findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvdbId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
-                }
-                if ((findResults == null || findResults.tv_results.isEmpty())) {
-                    TvResultsPage tvResultsPage = (TvResultsPage) (callTMDBAPI(tmdb.searchService().tv(series.getTitle(), 1, "en", null, null), new TvResultsPage()));
-                    series.setTmdbId(tvResultsPage.results.get(0).id); // We want a NPE to be thrown
+                TvResultsPage tvResultsPage = (TvResultsPage) (callTMDBAPI(tmdb.searchService().tv(series.getTitle(), 1, "en", null, null), new TvResultsPage()));
+                if (tvResultsPage.results.isEmpty()) {
+                    FindResults findResults = null;
+                    if (series.getTvdbId() != null && series.getTvdbId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
+                        findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvdbId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
+                    }
+                    if (series.getImdbId() != null && !series.getImdbId().equals("")) {
+                        findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getImdbId(), ExternalSource.IMDB_ID, "en"), findResults);
+                    }
+                    if (series.getTvrageId() != null && series.getTvrageId() != 0 && (findResults == null || findResults.tv_results.isEmpty())) {
+                        findResults = (FindResults) callTMDBAPI(tmdb.findService().find(series.getTvrageId().toString(), ExternalSource.IMDB_ID, "en"), findResults);
+                    }
+                    if ((findResults != null || !findResults.tv_results.isEmpty())) {
+                        series.setTmdbId(findResults.tv_results.get(0).id);
+                    }
                 } else {
-                    series.setTmdbId(findResults.tv_results.get(0).id);
+                    series.setTmdbId(tvResultsPage.results.get(0).id); // We want a NPE to be thrown
                 }
             }
 

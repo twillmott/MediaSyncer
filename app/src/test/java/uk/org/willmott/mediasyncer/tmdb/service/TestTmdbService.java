@@ -25,8 +25,9 @@ public class TestTmdbService {
     public void testSeriesUpdate() {
         ArrayList<Series> serieses = new ArrayList();
         Series series = new Series();
-//        series.setTitle("Police Interceptors");
-        series.setTmdbId(1396);
+        series.setTitle("First Dates");
+        series.setTvdbId(270907);
+//        series.setTmdbId(66001);
 
         ArrayList<Season> seasons = new ArrayList<>();
         Season season = new Season();
@@ -40,7 +41,7 @@ public class TestTmdbService {
 
         series.setSeasons(seasons);
 
-//        tmdbService.updateSeriesInfo(series);
+        tmdbService.updateSeriesInfo(series);
     }
 
 //    @Test
