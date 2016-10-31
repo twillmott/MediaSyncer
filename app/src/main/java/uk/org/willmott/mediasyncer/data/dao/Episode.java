@@ -37,6 +37,8 @@ public class Episode {
     private String thumbnailUrl;
     @DatabaseField
     Long lastTmdbUpdate;
+    @DatabaseField
+    Long lastWatched;
 
     public Episode() {
     } // Required by ormlite.
@@ -157,5 +159,13 @@ public class Episode {
 
     public void setLastTmdbUpdate(Long lastTmdbUpdate) {
         this.lastTmdbUpdate = lastTmdbUpdate;
+    }
+
+    public Long getLastWatched() {
+        return lastWatched;
+    }
+
+    public void setLastWatched(Long lastWatched) {
+        this.lastWatched = lastWatched;
     }
 }

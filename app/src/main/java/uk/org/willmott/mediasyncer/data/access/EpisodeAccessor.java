@@ -3,7 +3,9 @@ package uk.org.willmott.mediasyncer.data.access;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +77,48 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
         }
     }
 
+    public List<Episode> getAllUnwatched() {
+        try {
+            return episodeDao.queryBuilder().where().isNull("lastWatched").query();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "No unwatched episodes found, should this happen? " + e.getMessage());
+            return Lists.newArrayList();
+        }
+    }
+
+
+    /**
+     * Get the time last watched episode in the database. Will return null if there isn't one.
+     *
+     * @return
+     */
+    public Long getLastWatchedEpisode() {
+        try {
+            List<Episode> episodes = episodeDao.queryBuilder().orderBy("lastWatched", false).limit(1L).query();
+            if (!episodes.isEmpty()) {
+                return episodes.get(0).getLastWatched();
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "No unwatched episodes found, should this happen? " + e.getMessage());
+        }
+        return null;
+    }
+
+
+    /**
+     * Update the last watched field for an episode using its traktId.
+     */
+    public void updateTraktWatchedEpisodes(uk.org.willmott.mediasyncer.model.Episode episode) {
+        try {
+            UpdateBuilder<Episode, Integer> updateBuilder = episodeDao.updateBuilder();
+            updateBuilder.updateColumnValue("lastWatched", episode.getLastWatched());
+            updateBuilder.where().eq("traktId", episode.getTraktId());
+            updateBuilder.update();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "No unwatched episodes found, should this happen? " + e.getMessage());
+        }
+    }
+
 
     protected Episode getById(Integer id) {
         if (id == null) {
@@ -118,6 +162,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
                 model.getThumbnailUrl()
         );
         episode.setLastTmdbUpdate(model.getLastTmdbUpdate());
+        episode.setLastWatched(model.getLastWatched());
 
         return episode;
     }
@@ -138,6 +183,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
                 dao.getOverview()
         );
         episode.setLastTmdbUpdate(dao.getLastTmdbUpdate());
+        episode.setLastWatched(dao.getLastWatched());
 
         return episode;
     }

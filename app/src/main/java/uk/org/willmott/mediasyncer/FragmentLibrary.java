@@ -129,8 +129,9 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
         }
 
         if (id == R.id.refresh2) {
-            TmdbService tmdbService = new TmdbService();
-            tmdbService.populateBlankShows(getContext(), this);
+//            TmdbService tmdbService = new TmdbService();
+//            tmdbService.populateBlankShows(getContext(), this);
+            getTraktService().refreshAllEpisodeWatchedStatus(getContext(), this);
             return true;
         }
         return super.onOptionsItemSelected(item);

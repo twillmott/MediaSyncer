@@ -7,16 +7,20 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.uwetrottmann.tmdb2.Tmdb;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.Episode;
+import com.uwetrottmann.trakt5.entities.HistoryEntry;
 import com.uwetrottmann.trakt5.entities.Show;
 import com.uwetrottmann.trakt5.entities.Username;
 import com.uwetrottmann.trakt5.enums.Extended;
+import com.uwetrottmann.trakt5.enums.HistoryType;
 
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 import retrofit2.Response;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.data.access.EpisodeAccessor;
 import uk.org.willmott.mediasyncer.data.access.SeriesAccessor;
 import uk.org.willmott.mediasyncer.model.Season;
 import uk.org.willmott.mediasyncer.model.Series;
@@ -319,7 +324,7 @@ public class TraktService {
 
 
     private Season seasonMapper(com.uwetrottmann.trakt5.entities.Season season, List<uk.org.willmott.mediasyncer.model.Episode> episodes) {
-        return new Season(
+        Season seasonModel = new Season(
                 null,
                 season.ids.tmdb,
                 season.ids.trakt,
@@ -330,6 +335,9 @@ public class TraktService {
                 null,
                 null,
                 episodes);
+        seasonModel.setEpisodeCount(episodes.size());
+
+        return seasonModel;
     }
 
 
@@ -362,6 +370,14 @@ public class TraktService {
         }
     }
 
+    public void refreshAllEpisodeWatchedStatus(Context context, RefreshCompleteListener refreshCompleteListener) {
+        try {
+            new RefreshWatchedStatus(context, refreshCompleteListener).execute();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error loading all shows from trakt" + e.getMessage());
+        }
+    }
+
     private class RefreshTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
 
         TraktV2 trakt;
@@ -383,6 +399,9 @@ public class TraktService {
     }
 
 
+    /**
+     * Collect all watched, collected and watchlist shows from Trakt.
+     */
     private class RefreshFullTvDatabase extends AsyncTask<Void, Void, String> {
 
         RefreshCompleteListener refreshCompleteListener;
@@ -451,6 +470,51 @@ public class TraktService {
             accessor.writeAllSeriesToDatabase(showModels);
 
             return "Trakt service successfully grabbed " + showModels.size() + " series.";
+        }
+
+        @Override
+        protected void onPostExecute(String string) {
+            refreshCompleteListener.refreshComplete(string);
+        }
+    }
+
+    /**
+     * Refresh the watched status for all unwatched episodes
+     */
+    public class RefreshWatchedStatus extends AsyncTask<Void, Void, String> {
+
+        RefreshCompleteListener refreshCompleteListener;
+        Context context;
+
+        public RefreshWatchedStatus(Context context, RefreshCompleteListener refreshCompleteListener) {
+            this.refreshCompleteListener = refreshCompleteListener;
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            // Get the last watched episode so that we know when to start our search for the next watched episodes.
+            EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
+            Long lastWatched = episodeAccessor.getLastWatchedEpisode();
+
+            List<HistoryEntry> traktEpisodes = null;
+            try {
+                Response<List<HistoryEntry>> response = trakt.users().history(Username.ME, HistoryType.EPISODES, 1, 99999, Extended.DEFAULT_MIN, new DateTime(lastWatched == null ? 0 : lastWatched), null).execute();
+                traktEpisodes = response.body();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            List<uk.org.willmott.mediasyncer.model.Episode> episodes = Lists.newArrayList();
+            for (HistoryEntry historyEntry : traktEpisodes) {
+                uk.org.willmott.mediasyncer.model.Episode episode = new uk.org.willmott.mediasyncer.model.Episode();
+                episode.setTraktId(historyEntry.episode.ids.trakt);
+                episode.setLastWatched(historyEntry.watched_at.getMillis());
+                episodeAccessor.updateTraktWatchedEpisodes(episode);
+            }
+
+            return "Trakt watched progress updated :)";
         }
 
         @Override

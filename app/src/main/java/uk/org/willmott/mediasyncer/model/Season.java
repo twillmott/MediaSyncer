@@ -20,6 +20,7 @@ public class Season {
     String thumbnailUrl;
     List<Episode> episodes;
     Long lastTmdbUpdate;
+    Integer episodeCount;
 
     public Season() {
     } // Required for parceler
@@ -120,5 +121,13 @@ public class Season {
 
     public void setLastTmdbUpdate(Long lastTmdbUpdate) {
         this.lastTmdbUpdate = lastTmdbUpdate;
+    }
+
+    public Integer getEpisodeCount() {
+        return episodeCount;
+    }
+
+    public void setEpisodeCount(Integer episodeCount) {
+        this.episodeCount = episodeCount;
     }
 }

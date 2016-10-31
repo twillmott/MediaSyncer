@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -19,6 +21,7 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.ActivitySeason;
 import uk.org.willmott.mediasyncer.ActivityShow;
 import uk.org.willmott.mediasyncer.R;
+import uk.org.willmott.mediasyncer.model.Episode;
 import uk.org.willmott.mediasyncer.model.Season;
 
 /**
@@ -65,8 +68,15 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
         TextView title = holder.title;
         title.setText(mContext.getString(R.string.season).concat(" ").concat(Integer.toString(season.getSeasonNumber())));
         TextView info = holder.info;
-//        info.setText(season.episode_count.toString() + " Episodes (" + season.aired_episodes + " Aired)");
-        info.setText("Add functionality to inform number of aired episodes");
+
+        int watchedEpisodes = Collections2.filter(season.getEpisodes(), new Predicate<Episode>() {
+            @Override
+            public boolean apply(Episode input) {
+                return input.getLastWatched() != null;
+            }
+        }).size();
+
+        info.setText(season.getEpisodeCount().toString() + " Episodes (" + watchedEpisodes + " Watched)");
 
         ImageView imageView = holder.image;
         Picasso.with(mContext).load(season.getThumbnailUrl()).resize(54, 80).into(imageView);

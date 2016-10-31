@@ -109,6 +109,7 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
                 model.getThumbnailUrl(),
                 model.getBannerUrl());
         season.setLastTmdbUpdate(model.getLastTmdbUpdate());
+        season.setEpisodeCount(model.getEpisodeCount());
 
         return season;
     }
@@ -127,6 +128,7 @@ public class SeasonAccessor implements Accessor<Season, uk.org.willmott.mediasyn
                 dao.getThumbnail(),
                 episodeAccessor.getEpisodesForSeason(dao)); // List of episodes
         season.setLastTmdbUpdate(dao.getLastTmdbUpdate());
+        season.setEpisodeCount(dao.getEpisodeCount());
 
         return season;
     }

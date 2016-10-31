@@ -20,6 +20,7 @@ public class Episode {
     String thumbnailUrl;
     String overview;
     Long lastTmdbUpdate;
+    Long lastWatched;
 
     public Episode() {
     } //Required for parcel
@@ -128,5 +129,13 @@ public class Episode {
 
     public void setLastTmdbUpdate(Long lastTmdbUpdate) {
         this.lastTmdbUpdate = lastTmdbUpdate;
+    }
+
+    public Long getLastWatched() {
+        return lastWatched;
+    }
+
+    public void setLastWatched(Long lastWatched) {
+        this.lastWatched = lastWatched;
     }
 }

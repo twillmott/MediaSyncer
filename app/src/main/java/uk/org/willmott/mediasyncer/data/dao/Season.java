@@ -35,6 +35,8 @@ public class Season {
     private String banner;
     @DatabaseField
     Long lastTmdbUpdate;
+    @DatabaseField
+    Integer episodeCount;
 
 
     public Season() {
@@ -139,5 +141,13 @@ public class Season {
 
     public void setLastTmdbUpdate(Long lastTmdbUpdate) {
         this.lastTmdbUpdate = lastTmdbUpdate;
+    }
+
+    public Integer getEpisodeCount() {
+        return episodeCount;
+    }
+
+    public void setEpisodeCount(Integer episodeCount) {
+        this.episodeCount = episodeCount;
     }
 }
