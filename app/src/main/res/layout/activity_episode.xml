@@ -46,6 +46,54 @@
             app:title=" Toms Test "
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
         </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:text="Play"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_play_button"
+                android:src="@drawable/play_arrow"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="2" />
+
+            <ImageButton
+                android:text="Watched"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_watched_button"
+                android:src="@drawable/trakt_watched"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="2" />
+
+            <ImageButton
+                android:text="Collected"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_collected_button"
+                android:src="@drawable/trakt_collected"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="2" />
+
+            <ImageButton
+                android:text="Download"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_download_button"
+                android:src="@drawable/download_icon"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="2" />
+
+        </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 
 
@@ -69,45 +117,7 @@
             android:paddingBottom="10dp"
             android:paddingTop="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
 
-                <Button
-                    android:text="Play"
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:id="@+id/episode_play_button"
-                    android:layout_gravity="center"
-                    android:layout_weight="2" />
-
-                <Button
-                    android:text="Watched"
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:id="@+id/episode_watched_button"
-                    android:layout_gravity="center"
-                    android:layout_weight="2" />
-
-                <Button
-                    android:text="Collected"
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:id="@+id/episode_collected_button"
-                    android:layout_gravity="center"
-                    android:layout_weight="2" />
-
-                <Button
-                    android:text="Download"
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:id="@+id/episode_download_button"
-                    android:layout_gravity="center"
-                    android:layout_weight="2" />
-
-            </LinearLayout>
 
             <include layout="@layout/seperator" />
 

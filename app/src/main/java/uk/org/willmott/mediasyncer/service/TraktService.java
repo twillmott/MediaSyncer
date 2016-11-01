@@ -511,8 +511,13 @@ public class TraktService {
                     return "trakterror,Unable to communicate with Trakt (error 503). Trakt may be down.";
                 }
                 traktEpisodes = response.body();
+
+                if (traktEpisodes == null) {
+                    return "";
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                return "";
             }
 
             List<uk.org.willmott.mediasyncer.model.Episode> episodes = Lists.newArrayList();

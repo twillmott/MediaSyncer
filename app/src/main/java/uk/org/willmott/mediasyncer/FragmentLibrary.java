@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,6 +150,9 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
     @Override
     public void refreshComplete(String result) {
 
+        if (Strings.isNullOrEmpty(result)) {
+            return;
+        }
         // Update the results
         showsList.clear();
         showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());

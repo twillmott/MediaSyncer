@@ -1,11 +1,17 @@
 package uk.org.willmott.mediasyncer;
 
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,6 +68,12 @@ public class ActivityEpisode extends AppCompatActivity {
         // Episode information
         TextView textView = (TextView) findViewById(R.id.episode_info_text);
         textView.setText(episode.getOverview());
+
+        // Set up the buttons
+        if (episode.getLastWatched() == null) {
+            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_collected_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_watched_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        }
     }
 
     // Define the animation on the back button press.
