@@ -9,6 +9,7 @@ package uk.org.willmott.mediasyncer;
  */
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -93,6 +94,14 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Update our watch status
+        getTraktService().refreshAllEpisodeWatchedStatus(getContext(), this);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstance) {
         super.onActivityCreated(savedInstance);
 //        // Start by finding out what type of content we want to display.
@@ -129,9 +138,8 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
         }
 
         if (id == R.id.refresh2) {
-//            TmdbService tmdbService = new TmdbService();
-//            tmdbService.populateBlankShows(getContext(), this);
-            getTraktService().refreshAllEpisodeWatchedStatus(getContext(), this);
+            TmdbService tmdbService = new TmdbService();
+            tmdbService.populateBlankShows(getContext(), this);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -140,26 +148,25 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
     @Override
     public void refreshComplete(String result) {
 
-        if (result.contains("Trakt")) {
+        // Update the results
+        showsList.clear();
+        showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
+        libraryAdapter.notifyDataSetChanged();
+
+        String identifier = result.split(",")[0];
+        String message = result.split(",")[1];
+        if (identifier.contains("traktrefresh")) {
             // Stop the refresh button spinner.
             refresh.setActionView(null);
-            // Update the results
-            showsList.clear();
-            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
-            libraryAdapter.notifyDataSetChanged();
 
-            // Tell the user we've finished updating
             Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
 
-        } else if (result.contains("TMDB")) {
-
-            // Update the results
-            showsList.clear();
-            showsList.addAll(new SeriesAccessor(getContext()).getAllSeriesAsModel());
-            libraryAdapter.notifyDataSetChanged();
-
-            // Tell the user we've finished updating
-            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+        } else if (result.contains("tmdbupdateall")) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+        } else if (result.contains("traktwatchedprogress")) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        } else if (result.contains("trakterror")) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
         }
     }
 }

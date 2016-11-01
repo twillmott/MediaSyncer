@@ -222,7 +222,7 @@ public class TmdbService {
                 accessor.writeAllSeriesToDatabase(Lists.newArrayList(updateSeriesInfo(series)));
                 i++;
             }
-            return "TMDB service successfully updated " + i + "series";
+            return "tmdbupdateall,TMDB service successfully updated " + i + "series";
         }
 
         @Override

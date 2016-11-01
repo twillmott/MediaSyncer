@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 import com.uwetrottmann.tmdb2.Tmdb;
@@ -469,7 +470,7 @@ public class TraktService {
             SeriesAccessor accessor = new SeriesAccessor(context);
             accessor.writeAllSeriesToDatabase(showModels);
 
-            return "Trakt service successfully grabbed " + showModels.size() + " series.";
+            return "traktrefresh,Trakt service successfully grabbed " + showModels.size() + " series.";
         }
 
         @Override
@@ -497,10 +498,18 @@ public class TraktService {
             // Get the last watched episode so that we know when to start our search for the next watched episodes.
             EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
             Long lastWatched = episodeAccessor.getLastWatchedEpisode();
+            DateTime lastWatchedDateTime = new DateTime(0L);
+            if (lastWatched != null) {
+                lastWatchedDateTime = new DateTime(lastWatched);
+            }
 
             List<HistoryEntry> traktEpisodes = null;
             try {
-                Response<List<HistoryEntry>> response = trakt.users().history(Username.ME, HistoryType.EPISODES, 1, 99999, Extended.DEFAULT_MIN, new DateTime(lastWatched == null ? 0 : lastWatched), null).execute();
+                Response<List<HistoryEntry>> response = trakt.users().history(Username.ME, HistoryType.EPISODES, 1, 99999, Extended.DEFAULT_MIN, lastWatchedDateTime, null).execute();
+
+                if (response.code() == 503) {
+                    return "trakterror,Unable to communicate with Trakt (error 503). Trakt may be down.";
+                }
                 traktEpisodes = response.body();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -514,7 +523,7 @@ public class TraktService {
                 episodeAccessor.updateTraktWatchedEpisodes(episode);
             }
 
-            return "Trakt watched progress updated :)";
+            return "traktwatchedprogress,Trakt watched progress updated :)";
         }
 
         @Override
