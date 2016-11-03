@@ -13,6 +13,7 @@ import java.util.List;
 import uk.org.willmott.mediasyncer.data.TvDbHelper;
 import uk.org.willmott.mediasyncer.data.dao.Episode;
 import uk.org.willmott.mediasyncer.data.dao.Season;
+import uk.org.willmott.mediasyncer.data.dao.Series;
 
 /**
  * The class to handle all interaction with the episode table of the database.
@@ -88,6 +89,32 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
 
 
     /**
+     * Update an episodes collected time based on the show, season number and episode number.
+     *
+     * @param showId
+     * @param seasonNumber
+     * @param episodeNumber
+     * @param collectedTime
+     */
+    public void markEpisodeAsCollected(Integer showId, Integer seasonNumber, Integer episodeNumber, Long collectedTime) {
+        try {
+            String sqlStatement =
+                    "UPDATE Episode SET lastCollected = ?" +
+                            "WHERE seasonId IN (SELECT id FROM Season WHERE seriesId = ? AND seasonNumber = ?) AND episodeNumber = ?";
+
+            episodeDao.updateRaw(
+                    sqlStatement,
+                    collectedTime.toString(),
+                    showId.toString(),
+                    seasonNumber.toString(),
+                    episodeNumber.toString());
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error marking episode for show " + showId.toString() + "as collected." + e.getMessage());
+        }
+    }
+
+
+    /**
      * Get the time last watched episode in the database. Will return null if there isn't one.
      *
      * @return
@@ -108,7 +135,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
     /**
      * Update the last watched field for an episode using its traktId.
      */
-    public void updateTraktWatchedEpisodes(uk.org.willmott.mediasyncer.model.Episode episode) {
+    public void updateTraktWatchedEpisode(uk.org.willmott.mediasyncer.model.Episode episode) {
         try {
             UpdateBuilder<Episode, Integer> updateBuilder = episodeDao.updateBuilder();
             updateBuilder.updateColumnValue("lastWatched", episode.getLastWatched());
@@ -163,6 +190,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
         );
         episode.setLastTmdbUpdate(model.getLastTmdbUpdate());
         episode.setLastWatched(model.getLastWatched());
+        episode.setLastCollected(model.getLastCollected());
 
         return episode;
     }
@@ -184,6 +212,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
         );
         episode.setLastTmdbUpdate(dao.getLastTmdbUpdate());
         episode.setLastWatched(dao.getLastWatched());
+        episode.setLastCollected(dao.getLastCollected());
 
         return episode;
     }

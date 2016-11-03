@@ -6,12 +6,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.common.collect.Lists;
-import com.uwetrottmann.tmdb2.Tmdb;
 import com.uwetrottmann.trakt5.TraktV2;
 import com.uwetrottmann.trakt5.entities.AccessToken;
+import com.uwetrottmann.trakt5.entities.BaseEpisode;
+import com.uwetrottmann.trakt5.entities.BaseSeason;
 import com.uwetrottmann.trakt5.entities.BaseShow;
 import com.uwetrottmann.trakt5.entities.Episode;
 import com.uwetrottmann.trakt5.entities.HistoryEntry;
@@ -30,7 +30,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Response;
 import uk.org.willmott.mediasyncer.R;
@@ -379,6 +378,14 @@ public class TraktService {
         }
     }
 
+    public void refreshAllEpisodeCollectedStatus(Context context, RefreshCompleteListener refreshCompleteListener) {
+        try {
+            new RefreshCollectedStatus(context, refreshCompleteListener).execute();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error loading all shows from trakt" + e.getMessage());
+        }
+    }
+
     private class RefreshTraktToken extends AsyncTask<Void, Void, Response<AccessToken>> {
 
         TraktV2 trakt;
@@ -525,10 +532,67 @@ public class TraktService {
                 uk.org.willmott.mediasyncer.model.Episode episode = new uk.org.willmott.mediasyncer.model.Episode();
                 episode.setTraktId(historyEntry.episode.ids.trakt);
                 episode.setLastWatched(historyEntry.watched_at.getMillis());
-                episodeAccessor.updateTraktWatchedEpisodes(episode);
+                episodeAccessor.updateTraktWatchedEpisode(episode);
             }
 
             return "traktwatchedprogress,Trakt watched progress updated :)";
+        }
+
+        @Override
+        protected void onPostExecute(String string) {
+            refreshCompleteListener.refreshComplete(string);
+        }
+    }
+
+
+    /**
+     * Refresh the collected status for all episodes
+     */
+    public class RefreshCollectedStatus extends AsyncTask<Void, Void, String> {
+
+        RefreshCompleteListener refreshCompleteListener;
+        Context context;
+
+        public RefreshCollectedStatus(Context context, RefreshCompleteListener refreshCompleteListener) {
+            this.refreshCompleteListener = refreshCompleteListener;
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            // Get the last watched episode so that we know when to start our search for the next watched episodes.
+            EpisodeAccessor episodeAccessor = new EpisodeAccessor(context);
+            try {
+                Response<List<BaseShow>> response = trakt.users().collectionShows(Username.ME, Extended.DEFAULT_MIN).execute();
+
+                if (response.isSuccessful()) {
+                    for (BaseShow baseShow : response.body()) {
+                        if (baseShow.seasons == null) {
+                            continue;
+                        }
+                        for (BaseSeason season : baseShow.seasons) {
+                            if (season.episodes == null) {
+                                continue;
+                            }
+                            for (BaseEpisode episode : season.episodes) {
+                                episodeAccessor.markEpisodeAsCollected(baseShow.show.ids.trakt, season.number, episode.number, episode.collected_at.getMillis());
+                            }
+                        }
+
+                    }
+                } else if (response.code() == 503) {
+                    return "trakterror,Unable to communicate with Trakt (error 503). Trakt may be down.";
+                } else {
+                    return "trakterror,Unable to get collected shows :(";
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
+
+            return "traktcollectedprogress,Trakt collected progress updated :)";
         }
 
         @Override

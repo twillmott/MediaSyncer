@@ -21,6 +21,7 @@ public class Episode {
     String overview;
     Long lastTmdbUpdate;
     Long lastWatched;
+    Long lastCollected;
 
     public Episode() {
     } //Required for parcel
@@ -137,5 +138,13 @@ public class Episode {
 
     public void setLastWatched(Long lastWatched) {
         this.lastWatched = lastWatched;
+    }
+
+    public Long getLastCollected() {
+        return lastCollected;
+    }
+
+    public void setLastCollected(Long lastCollected) {
+        this.lastCollected = lastCollected;
     }
 }

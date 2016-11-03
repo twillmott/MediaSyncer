@@ -39,6 +39,8 @@ public class Episode {
     Long lastTmdbUpdate;
     @DatabaseField
     Long lastWatched;
+    @DatabaseField
+    Long lastCollected;
 
     public Episode() {
     } // Required by ormlite.
@@ -167,5 +169,13 @@ public class Episode {
 
     public void setLastWatched(Long lastWatched) {
         this.lastWatched = lastWatched;
+    }
+
+    public Long getLastCollected() {
+        return lastCollected;
+    }
+
+    public void setLastCollected(Long lastCollected) {
+        this.lastCollected = lastCollected;
     }
 }
