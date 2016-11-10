@@ -49,7 +49,7 @@ public class LibraryAdapter extends RecyclerView.Adapter<LibraryAdapter.ViewHold
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View libraryView = layoutInflater.inflate(R.layout.list_item_library, parent, false);
+        View libraryView = layoutInflater.inflate(R.layout.list_item_series, parent, false);
 
         // Return a new holder instance
         return new ViewHolder(libraryView);

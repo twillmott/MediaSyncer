@@ -71,8 +71,12 @@ public class ActivityEpisode extends AppCompatActivity {
 
         // Set up the buttons
         if (episode.getLastWatched() == null) {
-            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_collected_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
             DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_watched_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        }
+        if (episode.getLastCollected() == null) {
+            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_collected_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_play_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            DrawableCompat.setTint(((ImageButton) findViewById(R.id.episode_download_button)).getDrawable(), ContextCompat.getColor(this, R.color.colorPrimaryDark));
         }
     }
 

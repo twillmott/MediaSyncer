@@ -22,6 +22,7 @@ public class Episode {
     Long lastTmdbUpdate;
     Long lastWatched;
     Long lastCollected;
+    Long airedOn;
 
     public Episode() {
     } //Required for parcel
@@ -146,5 +147,13 @@ public class Episode {
 
     public void setLastCollected(Long lastCollected) {
         this.lastCollected = lastCollected;
+    }
+
+    public Long getAiredOn() {
+        return airedOn;
+    }
+
+    public void setAiredOn(Long airedOn) {
+        this.airedOn = airedOn;
     }
 }

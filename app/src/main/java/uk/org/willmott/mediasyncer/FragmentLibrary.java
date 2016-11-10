@@ -100,7 +100,7 @@ public class FragmentLibrary extends Fragment implements RefreshCompleteListener
         super.onViewCreated(view, savedInstanceState);
 
         // Update our watch status
-//        getTraktService().refreshAllEpisodeWatchedStatus(getContext(), this);
+        getTraktService().refreshAllEpisodeWatchedStatus(getContext(), this);
         getTraktService().refreshAllEpisodeCollectedStatus(getContext(), this);
     }
 

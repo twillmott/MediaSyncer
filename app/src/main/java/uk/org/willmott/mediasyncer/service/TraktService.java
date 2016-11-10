@@ -576,7 +576,7 @@ public class TraktService {
                                 continue;
                             }
                             for (BaseEpisode episode : season.episodes) {
-                                episodeAccessor.markEpisodeAsCollected(baseShow.show.ids.trakt, season.number, episode.number, episode.collected_at.getMillis());
+                                episodeAccessor.markEpisodeAsCollectedAndAired(baseShow.show.ids.trakt, season.number, episode.number, episode.collected_at.getMillis());
                             }
                         }
 

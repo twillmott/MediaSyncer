@@ -41,6 +41,8 @@ public class Episode {
     Long lastWatched;
     @DatabaseField
     Long lastCollected;
+    @DatabaseField
+    Long airedOn;
 
     public Episode() {
     } // Required by ormlite.
@@ -177,5 +179,13 @@ public class Episode {
 
     public void setLastCollected(Long lastCollected) {
         this.lastCollected = lastCollected;
+    }
+
+    public Long getAiredOn() {
+        return airedOn;
+    }
+
+    public void setAiredOn(Long airedOn) {
+        this.airedOn = airedOn;
     }
 }

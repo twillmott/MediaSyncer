@@ -14,6 +14,8 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import uk.org.willmott.mediasyncer.ActivityEpisode;
@@ -68,9 +70,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         title.setText("Episode ".concat(Integer.toString(episode.getEpisodeNumber())));
 
         TextView info = holder.info;
-//        String episodeInfoString = "First aired: " + episode.first_aired.getDayOfMonth() + "/" +
-//                episode.first_aired.getMonthOfYear() + "/" + episode.first_aired.getYear();
-        info.setText("TODO Implement the first aired string..");
+
+        String episodeInfoString = "Unable to retrieve aired information";
+        if (episode.getAiredOn() != null) {
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            episodeInfoString = "First aired: " + format.format(episode.getAiredOn());
+
+        }
+        info.setText(episodeInfoString + (episode.getLastWatched() == null ? "." : ". Watched."));
 
         ImageView imageView = holder.image;
         Picasso.with(mContext).load(episode.getThumbnailUrl()).centerCrop().resize(54, 80).into(imageView);

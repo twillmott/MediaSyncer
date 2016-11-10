@@ -160,6 +160,7 @@ public class TmdbService {
             episode.setThumbnailUrl(tvEpisode.still_path == null ? null : "http://image.tmdb.org/t/p/original" + tvEpisode.still_path);
             episode.setBannerUrl(tvEpisode.still_path == null ? null : "http://image.tmdb.org/t/p/original" + tvEpisode.still_path);
             episode.setLastTmdbUpdate(System.currentTimeMillis());
+            episode.setAiredOn(tvEpisode.air_date.getTime());
         }
         return episodes;
     }

@@ -96,10 +96,10 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
      * @param episodeNumber
      * @param collectedTime
      */
-    public void markEpisodeAsCollected(Integer showId, Integer seasonNumber, Integer episodeNumber, Long collectedTime) {
+    public void markEpisodeAsCollectedAndAired(Integer showId, Integer seasonNumber, Integer episodeNumber, Long collectedTime) {
         try {
             String sqlStatement =
-                    "UPDATE Episode SET lastCollected = ?" +
+                    "UPDATE Episode SET lastCollected=?" +
                             "WHERE seasonId IN (SELECT id FROM Season WHERE seriesId = ? AND seasonNumber = ?) AND episodeNumber = ?";
 
             episodeDao.updateRaw(
@@ -191,6 +191,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
         episode.setLastTmdbUpdate(model.getLastTmdbUpdate());
         episode.setLastWatched(model.getLastWatched());
         episode.setLastCollected(model.getLastCollected());
+        episode.setAiredOn(model.getAiredOn());
 
         return episode;
     }
@@ -213,6 +214,7 @@ public class EpisodeAccessor implements Accessor<Episode, uk.org.willmott.medias
         episode.setLastTmdbUpdate(dao.getLastTmdbUpdate());
         episode.setLastWatched(dao.getLastWatched());
         episode.setLastCollected(dao.getLastCollected());
+        episode.setAiredOn(dao.getAiredOn());
 
         return episode;
     }
