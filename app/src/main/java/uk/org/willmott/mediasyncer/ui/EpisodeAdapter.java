@@ -2,10 +2,13 @@ package uk.org.willmott.mediasyncer.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,6 +84,14 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
 
         ImageView imageView = holder.image;
         Picasso.with(mContext).load(episode.getThumbnailUrl()).centerCrop().resize(54, 80).into(imageView);
+
+        if (episode.getLastWatched() != null) {
+            DrawableCompat.setTint(holder.watchedButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorAccent));
+        }
+        if (episode.getLastCollected() != null) {
+            DrawableCompat.setTint(holder.collectedButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorAccent));
+            DrawableCompat.setTint(holder.downloadButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorAccent));
+        }
     }
 
     @Override
@@ -96,6 +107,9 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         public TextView title;
         public TextView info;
         public ImageView image;
+        public ImageButton watchedButton;
+        public ImageButton collectedButton;
+        public ImageButton downloadButton;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -126,6 +140,13 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
                     return false;
                 }
             });
+
+            watchedButton = (ImageButton) itemView.findViewById(R.id.episode_watched_button);
+            collectedButton = (ImageButton) itemView.findViewById(R.id.episode_collected_button);
+            downloadButton = (ImageButton) itemView.findViewById(R.id.episode_download_button);
+            DrawableCompat.setTint(collectedButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorDivider));
+            DrawableCompat.setTint(watchedButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorDivider));
+            DrawableCompat.setTint(downloadButton.getDrawable(), ContextCompat.getColor(getContext(), R.color.colorDivider));
         }
     }
 }

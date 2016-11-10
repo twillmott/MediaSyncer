@@ -27,11 +27,14 @@
 
     <LinearLayout android:id="@+id/centerContent"
         android:visibility="visible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_weight="4"
+        android:weightSum="5"
         android:layout_marginStart="10dp"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/episode_title"
             android:layout_width="wrap_content"
@@ -39,6 +42,7 @@
             android:textColor="#555555"
             android:typeface="sans"
             android:textSize="17sp"
+            android:layout_weight="2"
             android:textStyle="bold"/>
 
         <TextView
@@ -46,7 +50,51 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
+            android:layout_weight="2"
             android:textColor="#888888"
             android:textSize="15sp"/>
+
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:visibility="visible"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="match_parent">
+
+            <ImageButton
+                android:text="Watched"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_watched_button"
+                android:src="@drawable/trakt_watched"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:text="Collected"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_collected_button"
+                android:src="@drawable/trakt_collected"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:text="Download"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/episode_download_button"
+                android:src="@drawable/download_icon"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
     </LinearLayout>
+
 </LinearLayout>
